@@ -1,5 +1,5 @@
 all:
-	g++ *.cpp -o fret
+	g++ lib/*.cpp src/*.cpp -o fret
 
 
 clean:
