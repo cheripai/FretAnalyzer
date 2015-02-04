@@ -28,7 +28,7 @@ int main(int argc, char **argv)
 	double epsx = 1.0e-5;
     real_1d_array bndl = "[-100, -inf]";    // lower bounds for [Kd, EmFretMax]
     real_1d_array bndu = "[100, +inf]";     // upper bounds for [Kd, EmFretMax]
-    real_1d_array s = "[1, 1.0e+6]";      // step scale for [Kd, EmFretMax]
+    real_1d_array s = "[1, 1.0e+6]";        // step scale for [Kd, EmFretMax]
     ae_int_t maxits = 0;				    // maximum iterations (0 is unlimited)
     ae_int_t info;
     lsfitstate state;
