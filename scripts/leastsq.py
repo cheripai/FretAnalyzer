@@ -10,13 +10,13 @@ def main():
 
    # tpl is a tuple that contains the parameters of the fit
    a = 3
-   emfret = lambda tpl,x : tpl[1] * (1 - (2 * tpl[0]) / (x - a + tpl[0] +  np.sqrt((x - a - tpl[0]) ** 2) + 4 * tpl[0] * x))
+   emfret = lambda tpl,x : tpl[1] * (1 - (2 * tpl[0]) / (x - a + tpl[0] +  np.sqrt((x - a - tpl[0]) ** 2 + 4 * tpl[0] * x)))
 
    # set the function to run optimize on
    func = emfret
 
    #tplInitial contains the "first guess" of the parameters 
-   tplInitial = (1,10000)
+   tplInitial = (2,100000)
 
    # ErrorFunc is the diference between the func and the y "experimental" data
    ErrorFunc = lambda tpl,x,y: func(tpl,x)-y
@@ -30,6 +30,7 @@ def main():
    yy1 = func(tplFinal,xx1)
    plt.plot(x,y,'bo',xx1,yy1,'g-')
    plt.show()
+
 
 if __name__ == "__main__":
    main()
