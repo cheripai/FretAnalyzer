@@ -1,2 +1,1 @@
-We're going to change fret.cpp to follow this format instead.
-http://www.alglib.net/translator/man/manual.cpp.html#example_lsfit_d_nlscale
+src/fret.py is now fully functional. Constraints, correct answer, everything :D
