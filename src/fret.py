@@ -1,5 +1,5 @@
 from lmfit import minimize, Parameters, Parameter, report_fit
-from matplotlib.pyplot import plot, show
+from matplotlib.pyplot import plot, show, savefig
 from numpy import array, sqrt, linspace
 
 
@@ -44,7 +44,7 @@ def main():
     xx1 = linspace(x.min(),x.max(),50)
     yy1 = emfret(result.params, xx1, a)
     plot(x,y,'bo',xx1,yy1,'g-')
-    show()
+    savefig('plot.png', bbox_inches='tight')
 
 
 if __name__ == "__main__":
