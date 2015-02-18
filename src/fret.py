@@ -1,5 +1,5 @@
 from lmfit import minimize, Parameters, Parameter, report_fit
-from matplotlib.pyplot import plot, show, savefig
+from matplotlib.pyplot import plot, savefig
 from numpy import array, sqrt, linspace
 
 
