@@ -1,3 +1,4 @@
+from argparse import ArgumentParser
 from lmfit import minimize, Parameters, Parameter, report_fit
 from matplotlib.pyplot import plot, savefig
 from numpy import array, sqrt, linspace
@@ -13,20 +14,30 @@ def residuals(params, x, y, a):
     return y - emfret(params, x, a)
 
 
+def create_plot(filename, result, x, y, a):
+        xx = linspace(x.min(), x.max(), 50)
+        yy = emfret(result.params, xx, a)
+        plot(x, y, 'bo', xx, yy, 'g-')
+        savefig(filename, bbox_inches='tight')
+
+
 def main():
 
-    # provided data
-    x = array([ 10.0, 9.0, 8.0, 7.0,
-                 6.0, 5.0, 4.0, 3.0, 
-                 2.0, 1.0, 0.5, 0.0 ])
+    # sets up command line argument parser
+    parser = ArgumentParser(description='Runs script on commandline arguments')
+    parser.add_argument('-i', '--input', help='Input file name', required=True)
+    parser.add_argument('-o', '--output', help='Output file name for plot', required=False)
+    args = parser.parse_args()
 
-    # EmFret values
-    y = array([ 1506945.0, 1539493.0, 1559078.0, 
-                1570980.0, 1463291.0, 1341564.0, 
-                1266176.0, 1204986.0,  800148.8,
-                 539888.1,  201413.1, -73367.02 ])    
 
-    a = 3
+    # grab data from file to run lmfit on
+    f = open(args.input, 'r')
+    x = array([float(val) for val in f.readline().split()])
+    y = array([float(val) for val in f.readline().split()])
+    a = array([float(val) for val in f.readline().split()])
+    f.close()
+    assert x.size == y.size, 'number of values of x and y are mismatched'
+    assert a.size == 1, 'invalid number of values for a'
 
 
     # adding parameters and initial guesses
@@ -40,11 +51,9 @@ def main():
     report_fit(params)
 
 
-    # plots data and curve on graph and displays
-    xx1 = linspace(x.min(),x.max(),50)
-    yy1 = emfret(result.params, xx1, a)
-    plot(x,y,'bo',xx1,yy1,'g-')
-    savefig('plot.png', bbox_inches='tight')
+    # plots data and curve on graph and displays if output file is given
+    if(args.output):
+        create_plot(args.output, result, x, y, a)
 
 
 if __name__ == "__main__":
