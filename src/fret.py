@@ -1,7 +1,7 @@
 from argparse import ArgumentParser
-from lmfit import minimize, Parameters, Parameter, report_fit
+from lmfit import fit_report, minimize, Parameters, Parameter
 from matplotlib.pyplot import plot, savefig
-from numpy import array, sqrt, linspace
+from numpy import array, linspace, sqrt
 
 
 def emfret(params, x, a):
@@ -15,19 +15,24 @@ def residuals(params, x, y, a):
 
 
 def create_plot(filename, result, x, y, a):
-        xx = linspace(x.min(), x.max(), 50)
-        yy = emfret(result.params, xx, a)
-        plot(x, y, 'bo', xx, yy, 'g-')
-        savefig(filename, bbox_inches='tight')
+    xx = linspace(x.min(), x.max(), 50)
+    yy = emfret(result.params, xx, a)
+    plot(x, y, 'bo', xx, yy, 'g-')
+    savefig(filename, bbox_inches='tight')
 
+
+def init_argparse():
+    parser = ArgumentParser(description='Runs script on commandline arguments')
+    parser.add_argument('-i', '--input', help='Input file', required=True)
+    parser.add_argument('-o', '--output', help='Output results to file', required=False)
+    parser.add_argument('-p', '--plot', help='Output file for plot', required=False)
+    return parser.parse_args()
+    
 
 def main():
 
     # sets up command line argument parser
-    parser = ArgumentParser(description='Runs script on commandline arguments')
-    parser.add_argument('-i', '--input', help='Input file name', required=True)
-    parser.add_argument('-o', '--output', help='Output file name for plot', required=False)
-    args = parser.parse_args()
+    args = init_argparse()
 
 
     # grab data from file to run lmfit on
@@ -40,7 +45,7 @@ def main():
     assert a.size == 1, 'invalid number of values for a'
 
 
-    # adding parameters and initial guesses
+    # adding parameters, initial guesses, and constraints
     params = Parameters()
     params.add('kd', value=1, min=0)
     params.add('emfretmax', value=1, min=0)
@@ -48,12 +53,19 @@ def main():
 
     # run fitting procedure and display results
     result = minimize(residuals, params, args=(x, y, a))
-    report_fit(params)
+
+    if(args.output):
+        f = open(args.output, 'w')
+        for param_name in params:
+            f.write('%s\n' % repr(params[param_name].value))
+        f.close()
+    else:
+        print(fit_report(params, show_correl=False))
 
 
     # plots data and curve on graph and displays if output file is given
-    if(args.output):
-        create_plot(args.output, result, x, y, a)
+    if(args.plot):
+        create_plot(args.plot, result, x, y, a)
 
 
 if __name__ == "__main__":
