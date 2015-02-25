@@ -1,5 +1,8 @@
 ## How to get this exe
 
+https://drive.google.com/open?id=0B428rXBxUzFeOTRqczI3UkEzTEE&authuser=0
+
+
 ### download and install Anaconda: A free distribution for the SciPy stack. Supports Linux, Windows and Mac.
 
 
