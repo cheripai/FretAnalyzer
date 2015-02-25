@@ -1,46 +1,43 @@
-## How to get this exe
+## Link of fret.exe
 
 https://drive.google.com/open?id=0B428rXBxUzFeOTRqczI3UkEzTEE&authuser=0
 
+### 1. Preparation
+  
+download and install <strong>Anaconda</strong>: 
 
-### download and install Anaconda: A free distribution for the SciPy stack. Supports Linux, Windows and Mac.
+<small>A free distribution for the SciPy stack. Supports Linux, Windows and Mac.</small>
 
 
 from
-http://www.scipy.org/install.html
++ http://www.scipy.org/install.html
++ http://continuum.io/downloads
 
 
-http://continuum.io/downloads
+download <strong>pyinstaller </strong>
+from
++ https://github.com/pyinstaller/pyinstaller/wiki
 
 
-download pyinstaller from
-https://github.com/pyinstaller/pyinstaller/wiki
+you might need <strong>pywin32</strong> as the prerequiste for pyinstaller:
 
 
-you might need pywin32 as the prerequiste for pyinstaller:
++ http://sourceforge.net/projects/pywin32/files/
 
+### 2. get into cmd of windows (win+R cmd)
 
-http://sourceforge.net/projects/pywin32/files/
-
-### get into cmd of windows 
-
-
-### type <code>ipython</code> to get into the environment 
+type <code>ipython</code> to get into the environment 
  
- 
-<strong>notice: the commands below need to be run in ipython. because Anaconda already integrated the scipy, numpy and other packages.</strong>
+<strong>notice: the commands below need to run in <code>ipython</code>. 
+Because Anaconda already integrated the scipy, numpy and other packages.</strong>
 
 
-### cd to the directory of pyinstaller.py
+### 3. <code>cd</code> to the directory of pyinstaller.py
 
-
-<code>run setup.py install</code> to install pyinstaller from source
-
+type <code>run setup.py install</code> to install pyinstaller from source
 
 ### to compile
 <code>run <...directory...>\pyinstaller.py -F <...directory...>\fret.py</code> 
 
-
 ### to run
-<code>fret/dist/fret.exe</code> 
-
+<code><...directory...>\fret\dist\fret.exe</code> 
