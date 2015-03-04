@@ -1,12 +1,7 @@
 #include <fstream>
-#include <iostream>
 #include <sstream>
 #include <stdlib.h>
-#include <vector>
-
-using namespace std;
-typedef vector<vector<string> > GridStr;
-typedef vector<vector<double> > GridDbl;
+#include "../include/parser.h"
 
 
 // Reads text file into 2d vector
@@ -71,18 +66,4 @@ GridDbl getDataBlock(string file, int waveLength)
     }   
 
     return dataBlock;
-}
-
-
-int main()
-{
-    string file = "../FretData/ex414 blank.txt";
-    GridDbl dataBlock = getDataBlock(file, 475);
-    cout.precision(20);
-    for(int i = 0; i < dataBlock.size(); ++i)
-    {
-        for(int j = 0; j < dataBlock.at(0).size(); ++j)
-            cout << dataBlock.at(i).at(j) << " ";
-        cout << endl;
-    }
 }
