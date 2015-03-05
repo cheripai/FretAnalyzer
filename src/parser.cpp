@@ -3,7 +3,36 @@
 #include <stdlib.h>
 #include "../include/parser.h"
 
+// calculates emFret. Assumes that parameters are all same size in rows & cols
+//uses two hardcoded values given in one of  the papers.
+GridDbl const calculate_emFret( const GridDbl& fldd, const GridDbl& flaa, const GridDbl& emTotal)
+{
+    //this x and y value are hardcoded based on values given in "Development of FRET Assay into ..."
+    const double x = 0.378;
+    const double y = 0.026;
 
+    //this calculates the size of emTotal once, in case it's really big
+    //reserve the same number in spaces in memory for emFret (output)
+    
+    int size = emTotal.size();
+    GridDbl emFret;
+    emFret.reserve( size );
+    for ( unsigned i = 0; i < emTotal.size(); ++i)
+        emFret[i].reserve( size );
+
+
+    //the equation to use these in is EmFret = EmTotal - x*Fldd - y*Flaa
+    //use matrix subtraction (do it for each element)
+    for ( unsigned i = 0; i < emTotal.size(); ++i)
+        for ( unsigned j = 0; j < emTotal[i].size(); ++j)
+            if ( emTotal[i][j] == 0)
+                //if one of the cells left empty, skip it
+            else
+                emFret[i][j] = emTotal[i][j] - (x*fldd[i][j]) - (y*flaa[i][j]);
+
+    return emTotal;
+}//end calculate_emFret
+    
 // Reads text file into 2d vector
 GridStr readFile(string file)
 {
