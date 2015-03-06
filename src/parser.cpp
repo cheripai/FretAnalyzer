@@ -10,6 +10,13 @@ GridDbl calculate_emFret(const GridDbl& fldd, const GridDbl& flaa, const GridDbl
     //this x and y value are hardcoded based on values given in "Development of FRET Assay into ..."
     const double x = 0.378;
     const double y = 0.026;
+    
+    if(fldd.size() != flaa.size() || fldd[0].size() != flaa[0].size() 
+    || fldd.size() != emTotal.size() || fldd[0].size() != emTotal[0].size())
+    {
+        cerr << "flaa, fldd, and emTotal must be the same size";
+        exit(1);
+    }
 
 
     GridDbl emFret;   
