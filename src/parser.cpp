@@ -5,7 +5,7 @@
 
 // calculates emFret. Assumes that parameters are all same size in rows & cols
 // uses two hardcoded values given in one of  the papers.
-GridDbl calculate_emFret( const GridDbl& fldd, const GridDbl& flaa, const GridDbl& emTotal)
+GridDbl calculate_emFret(const GridDbl& fldd, const GridDbl& flaa, const GridDbl& emTotal)
 {
     //this x and y value are hardcoded based on values given in "Development of FRET Assay into ..."
     const double x = 0.378;
