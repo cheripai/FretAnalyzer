@@ -10,7 +10,7 @@ typedef vector<vector<string> > GridStr;
 typedef vector<vector<double> > GridDbl;
 
 
-GridDbl calculate_emFret( const GridDbl& fldd, const GridDbl& flaa, const GridDbl& emTotal);
+GridDbl calculate_emFret(const GridDbl& fldd, const GridDbl& flaa, const GridDbl& emTotal);
 
 //
 // returns a 2d vector of strings from raw text file output from machine
