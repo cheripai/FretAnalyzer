@@ -19,9 +19,9 @@ int main()
 
 
     ofstream f;
-    f.open("data.txt");
     for(unsigned i = 0; i < emfret.at(0).size(); ++i)
     {
+        f.open("data.txt");
         for(unsigned j = 0; j < emfret.size(); ++j)
         {
             f << emfret.at(j).at(i) << " ";
@@ -34,6 +34,8 @@ int main()
         f << endl;
         f << i + 1;     // represents the a value
         f << endl;
+        f.close();
+        // FIXME: Run python script here
     }
 
     // use QProcess
