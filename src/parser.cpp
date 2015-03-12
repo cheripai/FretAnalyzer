@@ -53,7 +53,7 @@ GridDbl subtractBlanks(const GridDbl &data, const GridDbl &blank)
 
     for(unsigned i = 0; i < data.size(); ++i)
     {
-        result.resize(data[0].size());
+        result[i].resize(data[0].size());
         for(unsigned j = 0; j < data[0].size(); ++j)
         {
             if(data[i][j])
@@ -75,6 +75,11 @@ GridStr readFile(string file)
 {
     GridStr data;
     ifstream input(file.c_str());
+    if(!input.is_open())
+    {
+        cerr << "Could not open file " << file << endl;
+        exit(1);
+    }
     const char row_delim = '\n';
     const char field_delim = '\t';
 

@@ -9,9 +9,11 @@ int main()
 {
     string blank414 = "FretData/ex414 blank.txt";
     string blank475 = "FretData/ex475 blank.txt";
-    GridDbl flaa = getDataBlock(blank475, 530);
-    GridDbl fldd = getDataBlock(blank414, 475);
-    GridDbl emTotal = getDataBlock(blank414, 530);
+    string data414 = "FretData/ex414 Rangep 1-5uM Ubc9 0-10uM.txt";
+    string data475 = "FretData/ex475 Rangep 1-5uM Ubc9 0-10uM.txt";
+    GridDbl flaa = subtractBlanks(getDataBlock(data475,530),getDataBlock(blank475,530));
+    GridDbl fldd = subtractBlanks(getDataBlock(data414,475),getDataBlock(blank414,475));
+    GridDbl emTotal = subtractBlanks(getDataBlock(data414,530),getDataBlock(blank414,530));
     GridDbl emfret = calculate_emFret(fldd, flaa, emTotal);
 
     // double *x = new double[emfret.size()];
@@ -19,6 +21,7 @@ int main()
 
 
     ofstream f;
+    f.setf(ios::fixed);
     for(unsigned i = 0; i < emfret.at(0).size(); ++i)
     {
         f.open("data.txt");
