@@ -1,11 +1,13 @@
+#include <iostream>
 #include <fstream>
 #include <sstream>
 #include <stdlib.h>
 #include "../include/parser.h"
 
+
 // calculates emFret. Assumes that parameters are all same size in rows & cols
 // uses two hardcoded values given in one of  the papers.
-GridDbl calculate_emFret(const GridDbl& fldd, const GridDbl& flaa, const GridDbl& emTotal)
+GridDbl calculate_emFret(const GridDbl &fldd, const GridDbl &flaa, const GridDbl &emTotal)
 {
     //this x and y value are hardcoded based on values given in "Development of FRET Assay into ..."
     const double x = 0.378;
@@ -24,14 +26,47 @@ GridDbl calculate_emFret(const GridDbl& fldd, const GridDbl& flaa, const GridDbl
 
     //the equation to use these in is EmFret = EmTotal - x*Fldd - y*Flaa
     //use matrix subtraction (do it for each element)
-    for ( unsigned i = 0; i < emTotal.size(); ++i)
+    for(unsigned i = 0; i < emTotal.size(); ++i)
     {
         emFret[i].resize(emTotal[0].size());
-        for ( unsigned j = 0; j < emTotal[i].size(); ++j)
+        for(unsigned j = 0; j < emTotal[i].size(); ++j)
+        {
             emFret[i][j] = emTotal[i][j] - (x*fldd[i][j]) - (y*flaa[i][j]);
+        }   
     }
 
     return emFret;
+}
+
+
+// performs matrix subtraction to remove blank fluorescence
+GridDbl subtractBlanks(const GridDbl &data, const GridDbl &blank)
+{
+    if(data.size() != blank.size() || data[0].size() != blank[0].size())
+    {
+        cerr << "data and blank must be the same size";
+        exit(1);
+    }
+
+    GridDbl result;
+    result.resize(data.size());
+
+    for(unsigned i = 0; i < data.size(); ++i)
+    {
+        result.resize(data[0].size());
+        for(unsigned j = 0; j < data[0].size(); ++j)
+        {
+            if(data[i][j])
+            {
+                result[i][j] = data[i][j] - blank[i][j];
+            }
+            else
+            {
+                result[i][j] = 0;
+            }
+        }
+    }
+    return result;
 }
 
     
@@ -93,7 +128,9 @@ GridDbl getDataBlock(string file, int waveLength)
     {
         dataBlock.at(i).resize(dataWidth);
         for(int j = 0; j < dataWidth; ++j)
+        {
             dataBlock.at(i).at(j) = atof(data.at(startRow+i).at(startCol+j).c_str());
+        }
     }   
 
     return dataBlock;
