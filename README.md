@@ -5,3 +5,4 @@
 4. X values should be user entered (error checking for doubles and correct size)
 5. User should also be able to save and reload their session 
 6. Qt make should copy python script to build directory
+7. Write tests for all components
