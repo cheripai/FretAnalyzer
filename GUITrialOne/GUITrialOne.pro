@@ -13,13 +13,10 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        mainwindow.cpp
+        mainwindow.cpp \
+    parser.cpp
 
-HEADERS  += mainwindow.h
+HEADERS  += mainwindow.h \
+    parser.h
 
 FORMS    += mainwindow.ui
-
-RESOURCES += \
-    resources.qrc
-
-DISTFILES +=

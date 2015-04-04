@@ -1,7 +1,6 @@
-#!/usr/bin/python
 from argparse import ArgumentParser
-import json
 from lmfit import conf_interval, report_ci, fit_report, minimize, Parameters, Parameter
+import lmfit
 from matplotlib.pyplot import plot, savefig
 from numpy import array, linspace, sqrt
 
@@ -55,17 +54,29 @@ def main():
 
     # run fitting procedure and display results
     result = minimize(residuals, params, args=(x, y, a))
-    ci = conf_interval(result, maxiter=1000)
+    ci = conf_interval(result)
 
     # print results to file or terminal (depends on -o flag)
     if(args.output):
         f = open(args.output, 'w')
-        f.write(json.dumps({param_name: params[param_name].value for param_name in params}) + '\n')
-        f.write(json.dumps(ci) + '\n')
+        for param_name in params:
+            f.write('%s\n' % repr(params[param_name].value))
+        f.write('kd')
+        for _ in ci['kd']:
+            f.write('\n'+repr(_))
+        f.write('\nemfretmax')
+        for _ in ci['emfretmax']:
+            f.write('\n'+repr(_))
         f.close()
     else:
-        print(json.dumps({param_name: params[param_name].value for param_name in params}, indent=4))
-        print(json.dumps(ci, indent=4))
+        print(fit_report(params, show_correl=False)+'\n')
+        print('kd')
+        for _ in ci['kd']:
+            print(repr(_))
+        print('emfretmax')
+        for _ in ci['emfretmax']:
+            print(repr(_))
+
 
     # plots data and curve on graph and displays if output file is given
     if(args.plot):

@@ -2,7 +2,6 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <QProcess>
 
 namespace Ui {
 class MainWindow;
@@ -14,11 +13,10 @@ class MainWindow : public QMainWindow
 
 public:
     explicit MainWindow(QWidget *parent = 0);
-    void read(QString fileName);
     ~MainWindow();
 
 private slots:
-    void on_calculateButton_clicked();
+    void on_pushButton_clicked();
 
 private:
     Ui::MainWindow *ui;
