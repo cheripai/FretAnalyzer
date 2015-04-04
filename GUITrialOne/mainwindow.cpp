@@ -20,14 +20,14 @@ void MainWindow::on_calculateButton_clicked()
 {
     QProcess fretPy;
     QStringList arguments;
-    arguments << "-i" << "../../test/data1.txt" << "-p" << "../plot.png";
-    fretPy.start("../../src/fret.py", arguments);
+    arguments << "-i" << "../data1.txt" << "-p" << "plot.png";
+    fretPy.start("./fret.py", arguments);
     fretPy.waitForFinished();
     QByteArray result = fretPy.readAll();
     fretPy.close();
     qDebug() << result;
 
-    QString plotPath = "../plot.png";
+    QString plotPath = "plot.png";
     QImage plot(plotPath);
     ui->plotFrame->setPixmap(QPixmap::fromImage(plot));
 }
