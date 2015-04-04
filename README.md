@@ -6,3 +6,4 @@
 5. User should also be able to save and reload their session 
 6. Qt make should copy python script to build directory
 7. Write tests for all components
+8. Output plot in large resolution and resize based on available real estate
