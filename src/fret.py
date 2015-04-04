@@ -1,7 +1,7 @@
+#!/usr/bin/python
 from argparse import ArgumentParser
 import json
 from lmfit import conf_interval, report_ci, fit_report, minimize, Parameters, Parameter
-import lmfit
 from matplotlib.pyplot import plot, savefig
 from numpy import array, linspace, sqrt
 
