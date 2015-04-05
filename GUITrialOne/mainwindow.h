@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QProcess>
+#include <QString>
 
 namespace Ui {
 class MainWindow;
@@ -18,10 +19,21 @@ public:
     ~MainWindow();
 
 private slots:
-    void on_calculateButton_clicked();
+    void on_calculateBtn_clicked();
+    void on_actionAbout_triggered();
+    void on_actionExit_triggered();
+    void on_fileOpen1_clicked();
+    void on_fileOpen2_clicked();
+    void on_fileOpen3_clicked();
+    void on_fileOpen4_clicked();
 
 private:
     Ui::MainWindow *ui;
+    QString selectFile();
+    QString blank414;
+    QString blank475;
+    QString data414;
+    QString data475;
 };
 
 #endif // MAINWINDOW_H
