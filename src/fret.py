@@ -20,7 +20,7 @@ def create_plot(filename, result, x, y, a):
     xx = linspace(x.min(), x.max(), 50)
     yy = emfret(result.params, xx, a)
     plot(x, y, 'bo', xx, yy, 'g-')
-    savefig(filename, bbox_inches='tight')
+    savefig(filename, bbox_inches='tight', dpi = 400)
 
 
 def init_argparse():
