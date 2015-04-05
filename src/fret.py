@@ -1,5 +1,6 @@
 #!/usr/bin/python
 from argparse import ArgumentParser
+from decimal import *
 import json
 from lmfit import conf_interval, report_ci, fit_report, minimize, Parameters, Parameter
 from matplotlib.pyplot import plot, savefig
@@ -64,8 +65,13 @@ def main():
         f.write(json.dumps(ci) + '\n')
         f.close()
     else:
-        print(json.dumps({param_name: params[param_name].value for param_name in params}, indent=4))
-        print(json.dumps(ci, indent=4))
+        for param_name in params:
+            print('{}:\n{}\n'.format(param_name, round(params[param_name].value, 4)))
+            p_width = max(len(str(p)) for p in ci[param_name][0])
+            getcontext().prec = 4
+            for _ in ci[param_name]:
+                print('{}%\t{}'.format(_[0]*100, round(_[1], 4)))
+            print('\n')
 
     # plots data and curve on graph and displays if output file is given
     if(args.plot):
