@@ -1,3 +1,6 @@
+#FretAnalyzer
+![](https://github.com/CheriPai/FretAnalyzer/raw/master/GUITrialOne/screenshotgui.png?raw=true)
+
 #TODO:
 1. Python script should read input from QProcess communication rather than from file
 2. Decode the JSON from python script
