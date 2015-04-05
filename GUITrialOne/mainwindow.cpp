@@ -3,6 +3,8 @@
 #include "parser.h"
 
 #include <QFile>
+#include <QFileDialog>
+#include <QMessageBox>
 #include <QTextStream>
 
 
@@ -11,6 +13,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
 }
 
 MainWindow::~MainWindow()
@@ -20,27 +23,97 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_pushButton_clicked()
 {
-        // read in file name
-        QString blank414 = ui->textEdit->toPlainText();
-        QString blank475 =  ui->textEdit_2->toPlainText();
-        QString data414 = ui->textEdit_3->toPlainText();
-        QString data475 = ui->textEdit_4->toPlainText();
 
-        // test read in file name
-        ui->label->setText(blank414);
-        ui->label_2->setText(blank475);
-        ui->label_3->setText(data414);
-        ui->label_4->setText(data475);
+    //use Qprocess to generate the graph
 
-        // main functionality
-         //GridDbl flaa = subtractBlanks(getDataBlock(data475,530),getDataBlock(blank475,530));
-       // GridDbl fldd = subtractBlanks(getDataBlock(data414,530),getDataBlock(blank414,475));
-       // GridDbl emTotal = subtractBlanks(getDataBlock(data414,530),getDataBlock(blank414,530));
-       // GridDbl emfret = calculate_emFret(fldd, flaa, emTotal);
+}
 
+void MainWindow::loadFile(const QString &fileName)
+{
+    QFile file(fileName);
+    if (!file.open(QFile::ReadOnly | QFile::Text)) {
+        QMessageBox::warning(this, tr("Application"),
+                             tr("Cannot read file %1:\n%2.")
+                             .arg(fileName)
+                             .arg(file.errorString()));
+        return;
+    }
 
-          // below is writing the result
-          QVector<double> x = {10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0.5, 0};
+    QTextStream in(&file);
+    // process file
 
-          readFile(blank414);
+    statusBar()->showMessage(tr("File loaded"), 2000);  //show a message to notify the user
+}
+
+bool MainWindow::saveFile(const QString &fileName)
+{
+    QFile file(fileName);
+    if (!file.open(QFile::WriteOnly | QFile::Text)) {
+        QMessageBox::warning(this, tr("Application"),
+                             tr("Cannot write file %1:\n%2.")
+                             .arg(fileName)
+                             .arg(file.errorString()));
+        return false;
+    }
+
+    QTextStream out(&file);
+
+    out << "12345";         // test writing!
+
+    statusBar()->showMessage(tr("File saved"), 2000);  //show a message to notify the user
+    return true;
+}
+
+bool MainWindow::saveAs()
+{
+    QFileDialog dialog(this);
+    dialog.setWindowModality(Qt::WindowModal);
+    dialog.setAcceptMode(QFileDialog::AcceptSave);
+    QStringList files;
+    if (dialog.exec())
+        files = dialog.selectedFiles();
+    else
+        return false;
+
+    return saveFile(files.at(0));
+}
+QString MainWindow::selectFile()
+{
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"), "",
+        tr("Text Files (*.txt)"));
+
+    return fileName;
+}
+
+void MainWindow::on_fileOpen1_clicked()
+{
+    blank414 = selectFile();
+    ui->fileName1->setText(blank414);
+    loadFile(blank414);
+}
+
+void MainWindow::on_fileOpen2_clicked()
+{
+    blank475 = selectFile();
+    ui->fileName2->setText(blank475);
+    loadFile(blank475);
+}
+
+void MainWindow::on_fileOpen3_clicked()
+{
+    data414 = selectFile();
+    ui->fileName3->setText(data414);
+    loadFile(data414);
+}
+
+void MainWindow::on_fileOpen4_clicked()
+{
+    data475 = selectFile();
+    ui->fileName4->setText(data475);
+     loadFile(data475);
+}
+
+void MainWindow::on_fileSave_clicked()
+{
+    saveAs();
 }
