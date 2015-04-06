@@ -17,7 +17,7 @@ public:
 
 private slots:
     void loadFile(const QString &fileName);
-    void saveFile(const QString &fileName);
+    bool saveFile(const QString &fileName);
     bool saveAs();
 
     void on_pushButton_clicked();

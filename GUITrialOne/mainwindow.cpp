@@ -30,11 +30,12 @@ void MainWindow::on_pushButton_clicked()
 
 void MainWindow::loadFile(const QString &fileName)
 {
-    readFile(fileName);
+    getDataBlock(fileName, 475);
+    //readFile(fileName);
     statusBar()->showMessage(tr("File loaded"), 2000);
 }
 
-void MainWindow::saveFile(const QString &fileName)
+bool MainWindow::saveFile(const QString &fileName)
 {
     writeFile(fileName);
     statusBar()->showMessage(tr("File saved"), 2000);

@@ -1,10 +1,12 @@
 Update:
 
-use QFileDialog to select a file to open
+GridStr readFile(string file);
 
-for testing, write result to a file uisng saveAs() ans save()
+testing getDatablock() now,
 
-make the GUI similiar to the master branch
+don't know why there is a out of range problem...
+
+see pareser.h betweent the comment 'start' and 'finish'(already passed the test "Starting row was calculated incorrectly")
 
 Goal:
 
