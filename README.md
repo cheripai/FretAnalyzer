@@ -2,7 +2,7 @@ Update:
 
 use QFileDialog to select a file to open
 
-for testing, write result to a file uisng saveAs() and save()
+for testing, write result to a file uisng saveAs() ans save()
 
 make the GUI similiar to the master branch
 

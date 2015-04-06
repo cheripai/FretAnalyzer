@@ -3,8 +3,8 @@
 #include "parser.h"
 
 #include <QFile>
-#include <QFileDialog>
 #include <QMessageBox>
+#include <QFileDialog>
 #include <QTextStream>
 
 
@@ -13,7 +13,6 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-
 }
 
 MainWindow::~MainWindow()
@@ -25,45 +24,22 @@ void MainWindow::on_pushButton_clicked()
 {
 
     //use Qprocess to generate the graph
-
+        //  readFile(blank414);
 }
+
 
 void MainWindow::loadFile(const QString &fileName)
 {
-    QFile file(fileName);
-    if (!file.open(QFile::ReadOnly | QFile::Text)) {
-        QMessageBox::warning(this, tr("Application"),
-                             tr("Cannot read file %1:\n%2.")
-                             .arg(fileName)
-                             .arg(file.errorString()));
-        return;
-    }
-
-    QTextStream in(&file);
-    // process file
-
-    statusBar()->showMessage(tr("File loaded"), 2000);  //show a message to notify the user
+    readFile(fileName);
+    statusBar()->showMessage(tr("File loaded"), 2000);
 }
 
-bool MainWindow::saveFile(const QString &fileName)
+void MainWindow::saveFile(const QString &fileName)
 {
-    QFile file(fileName);
-    if (!file.open(QFile::WriteOnly | QFile::Text)) {
-        QMessageBox::warning(this, tr("Application"),
-                             tr("Cannot write file %1:\n%2.")
-                             .arg(fileName)
-                             .arg(file.errorString()));
-        return false;
-    }
-
-    QTextStream out(&file);
-
-    out << "12345";         // test writing!
-
-    statusBar()->showMessage(tr("File saved"), 2000);  //show a message to notify the user
+    writeFile(fileName);
+    statusBar()->showMessage(tr("File saved"), 2000);
     return true;
 }
-
 bool MainWindow::saveAs()
 {
     QFileDialog dialog(this);
@@ -77,6 +53,7 @@ bool MainWindow::saveAs()
 
     return saveFile(files.at(0));
 }
+
 QString MainWindow::selectFile()
 {
     QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"), "",
@@ -84,7 +61,6 @@ QString MainWindow::selectFile()
 
     return fileName;
 }
-
 void MainWindow::on_fileOpen1_clicked()
 {
     blank414 = selectFile();
@@ -110,7 +86,7 @@ void MainWindow::on_fileOpen4_clicked()
 {
     data475 = selectFile();
     ui->fileName4->setText(data475);
-     loadFile(data475);
+    loadFile(data475);
 }
 
 void MainWindow::on_fileSave_clicked()

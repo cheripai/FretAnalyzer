@@ -7,13 +7,14 @@
 
 typedef QVector<QVector<QString> > GridStr;
 typedef QVector<QVector<double> > GridDbl;
+GridStr data;
 
 // returns a 2d vector of strings from raw text file output from machine
 // the file has a fixed format, so we can parse it accordingly.
-GridStr readFile(QString file){
+
+GridStr readFile(const QString & file){
 
     QVector<QString> tempStr;
-    GridStr data;
 
     // open a file
     QFile filein(file);
@@ -38,8 +39,10 @@ GridStr readFile(QString file){
     }
 
     filein.close();
-
-    QFile fileout("file.txt");    // below is testing. file.txt is under the /build folder
+    return data;
+}
+void  writeFile(const QString & file){
+        QFile fileout(file);    // below is testing
         if (!fileout.open(QFile::WriteOnly ))
         {
             qDebug()<< " can not write";
@@ -56,9 +59,6 @@ GridStr readFile(QString file){
              out<<"\n";
          }
          fileout.close();
-        qDebug()<< " write done";
-
-     return data;
 }
 
 #endif // PARSER_H
