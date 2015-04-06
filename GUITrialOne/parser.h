@@ -5,15 +5,14 @@
 #include <QDebug>
 #include <QTextStream>
 
-typedef QVector<QVector<QString> > GridStr;
-typedef QVector<QVector<double> > GridDbl;
-
-
-GridDbl dataBlock;
+typedef QVector< QVector<QString> > GridStr;
+typedef QVector< QVector<double> > GridDbl;
+   GridDbl dataBlock;
 // returns a 2d vector of strings from raw text file output from machine
 // the file has a fixed format, so we can parse it accordingly.
 
 GridStr readFile(const QString & file){   
+     qDebug() << "readFile was called" << endl;
     // open a file
     QFile filein(file);
     if (!filein.open(QFile::ReadOnly ))
@@ -50,9 +49,6 @@ GridDbl getDataBlock(const QString & file, int waveLength)
         int increment = data.at(1).at(12).toInt();
         int maxWaveLength = data.at(1).at(11).toInt();
         int minWaveLength = data.at(1).at(10).toInt();
-         qDebug() << "increment: "  <<increment <<" \n"
-                   << "maxWaveLength: "  <<maxWaveLength <<" \n"
-                     << "minWaveLength: "  <<minWaveLength <<" \n";
 
         if(waveLength > maxWaveLength
         || waveLength < minWaveLength
@@ -72,22 +68,62 @@ GridDbl getDataBlock(const QString & file, int waveLength)
             qDebug()  << "Starting row was calculated incorrectly" << endl;
             exit(-2);
         }
-        qDebug()  << "**********Start**********"<< endl;
 
-        for(int i = 0; i < dataHeight; ++i)
-        {
-            QVector<double> temp;
-            for(int j = 0; j < dataWidth; ++j)
-            {
-                temp.push_back( data.at(startRow+i).at(startCol+j).toDouble() );
-            }
-            dataBlock.push_back(temp);
-            qDebug()  <<endl;
-        }
+        //Initialize 2d array
+         dataBlock.resize(dataHeight);
+         for(int i = 0; i < dataHeight; ++i)
+         {
+             dataBlock[i].resize(dataWidth);
+         }
 
-        qDebug()  << "**********finish**********"<< endl;
+           qDebug() << "************start********" << endl;
+         for(int j = 0; j < dataWidth; ++j) // first row, discard the first two cols
+         {
+            dataBlock[0][j]= data.at(startRow).at(startCol + j).toDouble();
+         }
+
+         for(int i = 1; i < dataHeight; ++i)
+         {
+             for(int j = 0; j < dataWidth; ++j)
+             {
+                  dataBlock[i][j]= data.at(startRow+i).at(j).toDouble();
+             }
+         }
+            qDebug() << "************finish********" << endl;
         return dataBlock;
 }
+
+// performs matrix subtraction to remove blank fluorescence
+GridDbl subtractBlanks(const GridDbl &data, const GridDbl &blank)
+{
+
+    qDebug() << "subtractBlanks was called" << endl;
+    if(data.size() != blank.size() || data[0].size() != blank[0].size())
+    {
+        qDebug() << "data and blank must be the same size";
+        exit(-2);
+    }
+    GridDbl result;
+    result.resize(data.size());
+
+    for(int i = 0; i < data.size(); ++i)
+    {
+        result[i].resize(data[0].size());
+        for(int j = 0; j < data[0].size(); ++j)
+        {
+            if(data[i][j])
+            {
+                result[i][j] = data[i][j] - blank[i][j];
+            }
+            else
+            {
+                result[i][j] = 0;
+            }
+        }
+    }
+    return result;
+}
+
 void  writeFile(const QString & file){
 
         QFile fileout(file);    // below is testing
@@ -98,13 +134,14 @@ void  writeFile(const QString & file){
         }
 
          QTextStream out(&fileout);
+         out.setRealNumberNotation(QTextStream::FixedNotation);
          for(int i= 0; i < dataBlock.size(); ++i)
          {
-             for(int j= 0; j < dataBlock.at(i).size(); ++j)
+             for(int j= 0; j <dataBlock.at(i).size(); ++j)
              {
                   out<<  dataBlock.at(i).at(j) << " ";
              }
-             out<<"\n\n";
+             out << endl;
          }
          fileout.close();
 }
