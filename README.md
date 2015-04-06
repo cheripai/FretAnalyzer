@@ -8,7 +8,7 @@ make the GUI similiar to the master branch
 
 Goal:
 
-get the four functions work in a QT style instead of a pure c++ style (Make sure they stay in a separate file and are imported into mainwindow.cpp)
+get the four functions work in a QT style instead of a pure c++ style **(Make sure they stay in a separate file and are imported into mainwindow.cpp)**
 
 readFile()
 
