@@ -3,8 +3,7 @@
 
 #TODO:
 1. Python script should read input from QProcess communication rather than from file
-2. Decode the JSON from python script
-3. X values should be user entered (error checking for doubles and correct size)
-4. User should be able to save and reload their session 
-5. Calculate button should grab file paths from textedits (in case of manual entry)
-6. Write tests for all components
+2. X values should be user entered (error checking for doubles and correct size)
+3. User should be able to save and reload their session 
+4. Calculate button should grab file paths from textedits (in case of manual entry)
+5. Write tests for all components
