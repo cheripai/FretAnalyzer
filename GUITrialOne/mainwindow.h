@@ -29,11 +29,13 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
+    QByteArray runFretPy(QString x, QString y, QString a, QString plotPath);
     QString selectFile();
     QString blank414;
     QString blank475;
     QString data414;
     QString data475;
+    QString plotPath;
 };
 
 #endif // MAINWINDOW_H

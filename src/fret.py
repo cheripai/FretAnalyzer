@@ -26,7 +26,7 @@ def create_plot(filename, result, x, y, a):
 
 def init_argparse():
     parser = ArgumentParser(description='Runs script on commandline arguments')
-    parser.add_argument('-i', '--input', help='Input file', required=True)
+    parser.add_argument('-i', '--input', help='Input file', required=False)
     parser.add_argument('-o', '--output', help='Output results to file', required=False)
     parser.add_argument('-p', '--plot', help='Output file for plot', required=False)
     return parser.parse_args()
@@ -39,11 +39,16 @@ def main():
 
 
     # grab data from file to run lmfit on
-    f = open(args.input, 'r')
-    x = array([float(val) for val in f.readline().split()])
-    y = array([float(val) for val in f.readline().split()])
-    a = array([float(val) for val in f.readline().split()])
-    f.close()
+    if(args.input):
+        f = open(args.input, 'r')
+        x = array([float(val) for val in f.readline().split()])
+        y = array([float(val) for val in f.readline().split()])
+        a = array([float(val) for val in f.readline().split()])
+        f.close()
+    else:
+        x = array([float(val) for val in input().split()])
+        y = array([float(val) for val in input().split()])
+        a = array([float(val) for val in input().split()])
     assert x.size == y.size, 'number of values of x and y are mismatched'
     assert a.size == 1, 'invalid number of values for a'
 
