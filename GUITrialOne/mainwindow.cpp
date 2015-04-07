@@ -23,10 +23,13 @@ MainWindow::~MainWindow()
 void MainWindow::on_calculateBtn_clicked()
 {
     ui->statusBar->showMessage(tr("Calculating..."));
+
+    QString x = ui->xValText->toPlainText();
     // FIXME: Grab values from C++ functions instead of hardcoded
-    QString x = "10.0 9.0 8.0 7.0 6.0 5.0 4.0 3.0 2.0 1.0 0.5 0.0";
     QString y = "588971.60 629608.20 601458.60 591147.50 521218.80 509342.30 497718.90 430004.60 440683.00 279258.60 198418.50 -21109.88";
     QString a = "1";
+
+    // ASSERT that x y and a are of the right length and properly formatted
     QByteArray result = runFretPy(x, y, a, plotPath);
     ui->resultsFrame->setText(result);
 
@@ -61,7 +64,12 @@ QByteArray MainWindow::runFretPy(QString x, QString y, QString a, QString plotPa
     error = fretPy.readAllStandardError();
     fretPy.close();
 
-    qDebug() << error;
+    if(error != "")
+    {
+        qDebug() << error;
+        result = error;
+    }
+
     return result;
 }
 
