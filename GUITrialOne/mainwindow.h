@@ -27,6 +27,8 @@ private slots:
     void on_fileOpen3_clicked();
     void on_fileOpen4_clicked();
 
+    void on_actionNew_triggered();
+
 private:
     Ui::MainWindow *ui;
     QByteArray runFretPy(QString x, QString y, QString a, QString plotPath);

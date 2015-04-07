@@ -19,10 +19,12 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+
 // TODO: read filenames from textboxes when calculate is clicked (in case user manually typed in path)
 void MainWindow::on_calculateBtn_clicked()
 {
     ui->statusBar->showMessage(tr("Calculating..."));
+    QFile::remove(plotPath);    // removes old plot (if it exists) prior to new generation
 
     QString x = ui->xValText->toPlainText();
     // FIXME: Grab values from C++ functions instead of hardcoded
@@ -128,3 +130,22 @@ void MainWindow::on_actionAbout_triggered()
     QMessageBox::information(this, "About","FretAnalyzer Version: 0.0\nBy: Dat Do, Patrick Cammall, Shilpa Chirackel, and Hui Yang");
 }
 
+
+// Clears all existing data
+void MainWindow::on_actionNew_triggered()
+{
+    ui->fileName1->setText("");
+    ui->fileName2->setText("");
+    ui->fileName3->setText("");
+    ui->fileName4->setText("");
+    blank414 = "";
+    blank475 = "";
+    data414 = "";
+    data475 = "";
+    ui->xValText->setText("");
+
+    ui->resultsFrame->setText("");
+    QFile::remove(plotPath);
+    QImage plot(plotPath);
+    ui->plotFrame->setPixmap(QPixmap::fromImage(plot));
+}
