@@ -8,12 +8,11 @@
 typedef QVector< QVector<QString> > GridStr;
 typedef QVector< QVector<double> > GridDbl;
 
-GridDbl dataBlock;
+GridDbl emFret;
 // returns a 2d vector of strings from raw text file output from machine
 // the file has a fixed format, so we can parse it accordingly.
-
 GridStr readFile(const QString & file){   
-     qDebug() << "readFile was called" << endl;
+
     // open a file
     QFile filein(file);
     if (!filein.open(QFile::ReadOnly ))
@@ -21,23 +20,18 @@ GridStr readFile(const QString & file){
         qDebug()<< " can not read";
         exit(-1);
     }
+
     GridStr data;
     QTextStream in(&filein);
 
     while (!in.atEnd()) {
           QString line = in.readLine(); // read a line
-          line = line.simplified(); // discard \t \n
           QVector<QString> tempStr;
-          QStringList list1 = line.split(" "); // split by whitespace
+          QStringList list1 = line.split("\t"); // split by \t
 
           for (int i = 0; i < list1.size(); ++i)
           {
               tempStr.push_back( list1.at(i));
-          }
-          int cols = list1.size();
-          while(cols <32){
-              tempStr.push_back(" ");
-              cols++;
           }
           data.push_back(tempStr);   // pushback to a 2d string vector      
     }
@@ -52,12 +46,9 @@ GridDbl getDataBlock(const QString & file, int waveLength)
         const int dataWidth = 24;
 
         // Gets following data from corresponding cell in data array
-        int increment = data.at(1).at(12).toInt();
-        int maxWaveLength = data.at(1).at(11).toInt();
-        int minWaveLength = data.at(1).at(10).toInt();
-
-        qDebug() << " increment: " << increment <<", maxWaveLength: " << maxWaveLength
-                 << ", minWaveLength: " << minWaveLength <<endl;
+        int increment = data.at(1).at(14).toInt();
+        int maxWaveLength = data.at(1).at(13).toInt();
+        int minWaveLength = data.at(1).at(12).toInt();
 
         if(waveLength > maxWaveLength
         || waveLength < minWaveLength
@@ -77,32 +68,24 @@ GridDbl getDataBlock(const QString & file, int waveLength)
             qDebug()  << "Starting row was calculated incorrectly" << endl;
             exit(-2);
         }
-        qDebug() <<"height: "<< data.size() << ", width: " << data.at(0).size() <<endl;
+
 
         //Initialize 2d array
-
+        GridDbl dataBlock;
          dataBlock.resize(dataHeight);
          for(int i = 0; i < dataHeight; ++i)
          {
              dataBlock[i].resize(dataWidth);
          }
 
-           qDebug() << "************start********" << endl;
-          for(int j = 0; j < dataWidth; ++j) // first row, discard the first two cols
-          {
-            dataBlock[0][j]= data.at(startRow).at(startCol + j).toDouble();
-          }
-
-         for(int i = 1; i < dataHeight; ++i)
+         for(int i = 0; i < dataHeight; ++i)
          {
              for(int j = 0; j < dataWidth; ++j)
              {
-                  dataBlock[i][j]= data.at(startRow+i).at(j).toDouble();
-                 //qDebug() << data.at(startRow+i).at(j).toDouble();
+                  dataBlock[i][j]= data.at(startRow+i).at(j+startCol).toDouble();
              }
-             //qDebug() << endl;
+
          }
-            qDebug() << "************finish********" << endl;
         return dataBlock;
 }
 
@@ -110,7 +93,6 @@ GridDbl getDataBlock(const QString & file, int waveLength)
 GridDbl subtractBlanks(const GridDbl &data, const GridDbl &blank)
 {
 
-    qDebug() << "subtractBlanks was called" << endl;
     if(data.size() != blank.size() || data[0].size() != blank[0].size())
     {
         qDebug() << "data and blank must be the same size";
@@ -137,6 +119,36 @@ GridDbl subtractBlanks(const GridDbl &data, const GridDbl &blank)
     return result;
 }
 
+// calculates emFret. Assumes that parameters are all same size in rows & cols
+// uses two hardcoded values given in one of  the papers.
+GridDbl calculate_emFret(const GridDbl &fldd, const GridDbl &flaa, const GridDbl &emTotal)
+{
+    //this x and y value are hardcoded based on values given in "Development of FRET Assay into ..."
+    const double x = 0.378;
+    const double y = 0.026;
+
+    if(fldd.size() != flaa.size() || fldd[0].size() != flaa[0].size()
+    || fldd.size() != emTotal.size() || fldd[0].size() != emTotal[0].size())
+    {
+        qDebug() << "flaa, fldd, and emTotal must be the same size";
+        exit(-2);
+    }
+
+    emFret.resize(emTotal.size());
+
+    //the equation to use these in is EmFret = EmTotal - x*Fldd - y*Flaa
+    //use matrix subtraction (do it for each element)
+    for(int i = 0; i < emTotal.size(); ++i)
+    {
+        emFret[i].resize(emTotal[0].size());
+        for(int j = 0; j < emTotal[i].size(); ++j)
+        {
+            emFret[i][j] = emTotal[i][j] - (x*fldd[i][j]) - (y*flaa[i][j]);
+        }
+    }
+
+    return emFret;
+}
 void  writeFile(const QString & file){
 
         QFile fileout(file);    // below is testing
@@ -146,17 +158,27 @@ void  writeFile(const QString & file){
             exit(-1);
         }
 
+         // double *x = new double[emfret.size()];
+         double x[12] = {10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0.5, 0};
+
          QTextStream out(&fileout);
          out.setRealNumberNotation(QTextStream::FixedNotation);
-         for(int i= 0; i < dataBlock.size(); ++i)
+         int final = emFret.at(0).size()-1;
+
+         for(int j= 0; j <emFret.size(); ++j)
          {
-             for(int j= 0; j <dataBlock.at(i).size(); ++j)
-             {
-                  out<<  dataBlock.at(i).at(j) << " ";
-             }
-             out << endl;
+                  out<<  emFret.at(j).at(final) << " ";
          }
-         fileout.close();
+         out << endl;
+         for(int j = 0; j < emFret.size(); ++j)
+         {
+                  out << x[j] << " ";
+         }
+         out << endl;
+         out << final +1;     // represents the a value
+         out << endl;
+
+          fileout.close();
 }
 
 #endif // PARSER_H

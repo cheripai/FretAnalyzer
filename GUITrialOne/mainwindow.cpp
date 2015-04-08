@@ -22,7 +22,11 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_pushButton_clicked()
 {
-     //GridDbl fldd = subtractBlanks(getDataBlock(data414,475),getDataBlock(blank414,475));
+        GridDbl flaa = subtractBlanks(getDataBlock(data475,530),getDataBlock(blank475,530));
+       GridDbl fldd = subtractBlanks(getDataBlock(data414,475),getDataBlock(blank414,475));
+      GridDbl emTotal = subtractBlanks(getDataBlock(data414,530),getDataBlock(blank414,530));
+       GridDbl emfret = calculate_emFret(fldd, flaa, emTotal);
+    statusBar()->showMessage(tr("Emfret calculated"), 2000);
     //use Qprocess to generate the graph
         //  readFile(blank414);
 }
@@ -30,9 +34,7 @@ void MainWindow::on_pushButton_clicked()
 
 void MainWindow::loadFile(const QString &fileName)
 {
-    getDataBlock(fileName, 475);
-    //readFile(fileName);
-    statusBar()->showMessage(tr("File loaded"), 2000);
+    statusBar()->showMessage(fileName+tr("File loaded"), 2000);
 }
 
 bool MainWindow::saveFile(const QString &fileName)
@@ -71,7 +73,7 @@ void MainWindow::on_fileOpen1_clicked()
 
 void MainWindow::on_fileOpen2_clicked()
 {
-    blank475 = selectFile();
+    blank475 = selectFile();  
     ui->fileName2->setText(blank475);
     loadFile(blank475);
 }

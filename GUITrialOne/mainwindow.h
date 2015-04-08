@@ -36,6 +36,11 @@ private:
     QString blank475;
     QString data414;
     QString data475;
+
+    QString waveLength1;
+    QString waveLength2;
+    QString waveLength3;
+    QString waveLength4;
 };
 
 #endif // MAINWINDOW_H
