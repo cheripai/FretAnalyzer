@@ -22,7 +22,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_pushButton_clicked()
 {
-
+     //GridDbl fldd = subtractBlanks(getDataBlock(data414,475),getDataBlock(blank414,475));
     //use Qprocess to generate the graph
         //  readFile(blank414);
 }

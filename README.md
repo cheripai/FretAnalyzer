@@ -1,23 +1,14 @@
 Update:
 
-getDataBlock works well when calling getDataBlock(blank414,475),
-but not others, not general enough?
+use QFileDialog to select a file to open
 
-  getDataBlock(data475,530)
-  
-  getDataBlock(blank475,530)
-  
-  getDataBlock(data414,475) 
+for testing, write result to a file uisng saveAs() ans save()
 
-√ getDataBlock(blank414,475)
-
-  getDataBlock(data414,530)
-
-  getDataBlock(blank414,530)
+make the GUI similiar to the master branch
 
 Goal:
 
-get the four functions work in a QT sytle instead of a pure c++ style **(Make sure they stay in a separate file and are imported into mainwindow.cpp)**
+get the four functions work in a QT sytle instead of a pure c++ style
 
 readFile()
 

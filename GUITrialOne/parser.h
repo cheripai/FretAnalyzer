@@ -7,7 +7,8 @@
 
 typedef QVector< QVector<QString> > GridStr;
 typedef QVector< QVector<double> > GridDbl;
-   GridDbl dataBlock;
+
+GridDbl dataBlock;
 // returns a 2d vector of strings from raw text file output from machine
 // the file has a fixed format, so we can parse it accordingly.
 
@@ -33,7 +34,12 @@ GridStr readFile(const QString & file){
           {
               tempStr.push_back( list1.at(i));
           }
-          data.push_back(tempStr);   // pushback to a 2d string vector
+          int cols = list1.size();
+          while(cols <32){
+              tempStr.push_back(" ");
+              cols++;
+          }
+          data.push_back(tempStr);   // pushback to a 2d string vector      
     }
 
     filein.close();
@@ -49,6 +55,9 @@ GridDbl getDataBlock(const QString & file, int waveLength)
         int increment = data.at(1).at(12).toInt();
         int maxWaveLength = data.at(1).at(11).toInt();
         int minWaveLength = data.at(1).at(10).toInt();
+
+        qDebug() << " increment: " << increment <<", maxWaveLength: " << maxWaveLength
+                 << ", minWaveLength: " << minWaveLength <<endl;
 
         if(waveLength > maxWaveLength
         || waveLength < minWaveLength
@@ -68,8 +77,10 @@ GridDbl getDataBlock(const QString & file, int waveLength)
             qDebug()  << "Starting row was calculated incorrectly" << endl;
             exit(-2);
         }
+        qDebug() <<"height: "<< data.size() << ", width: " << data.at(0).size() <<endl;
 
         //Initialize 2d array
+
          dataBlock.resize(dataHeight);
          for(int i = 0; i < dataHeight; ++i)
          {
@@ -77,17 +88,19 @@ GridDbl getDataBlock(const QString & file, int waveLength)
          }
 
            qDebug() << "************start********" << endl;
-         for(int j = 0; j < dataWidth; ++j) // first row, discard the first two cols
-         {
+          for(int j = 0; j < dataWidth; ++j) // first row, discard the first two cols
+          {
             dataBlock[0][j]= data.at(startRow).at(startCol + j).toDouble();
-         }
+          }
 
          for(int i = 1; i < dataHeight; ++i)
          {
              for(int j = 0; j < dataWidth; ++j)
              {
                   dataBlock[i][j]= data.at(startRow+i).at(j).toDouble();
+                 //qDebug() << data.at(startRow+i).at(j).toDouble();
              }
+             //qDebug() << endl;
          }
             qDebug() << "************finish********" << endl;
         return dataBlock;
