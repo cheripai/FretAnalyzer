@@ -1,25 +1,16 @@
-Update:
+Everything works well now, still need some polishing
 
-use QFileDialog to select a file to open 
+1. By clikcing the open button, chose four fies
+2. click "Emfret calculated"
+3. click "save as" to save the result to a file
 
-for testing, write result to a file uisng saveAs() ans save()
+the four funtions are in ```parser.h```
 
-make the GUI similiar to the master branch
+Output:
+just the same as the main.cpp in the src folder
+```
+0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 -21809.310128 -34511.629898 -75772.428300 -75142.687650 -90612.355930 
+10.000000 9.000000 8.000000 7.000000 6.000000 5.000000 4.000000 3.000000 2.000000 1.000000 0.500000 0.000000 0.000000 0.000000 0.000000 0.000000 
+24
 
-Goal:
-
-get the four functions work in a QT sytle instead of a pure c++ style
-
-readFile()
-
-getDataBlock()
-
-subtractBlanks()
-
-calculate_emFret()
-
-
-From Dat:
----------------------------------
-
-Also, make sure you take note of the changes I recently made to mainwindow.cpp on the master branch
+```
