@@ -11,6 +11,8 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     plotPath = "plot.png";
+    ui->inputTable->setColumnCount(64);
+    ui->inputTable->setRowCount(64);
 }
 
 MainWindow::~MainWindow()
@@ -26,7 +28,7 @@ void MainWindow::on_calculateBtn_clicked()
     ui->statusBar->showMessage(tr("Calculating..."));
     QFile::remove(plotPath);    // removes old plot (if it exists) prior to new generation
 
-    QString x = ui->xValText->toPlainText();
+    QString x = "";
     // FIXME: Grab values from C++ functions instead of hardcoded
     QString y = "588971.60 629608.20 601458.60 591147.50 521218.80 509342.30 497718.90 430004.60 440683.00 279258.60 198418.50 -21109.88";
     QString a = "1";
@@ -85,34 +87,6 @@ QString MainWindow::selectFile()
 }
 
 
-void MainWindow::on_fileOpen1_clicked()
-{
-    blank414 = selectFile();
-    ui->fileName1->setText(blank414);
-}
-
-
-void MainWindow::on_fileOpen2_clicked()
-{
-    blank475 = selectFile();
-    ui->fileName2->setText(blank475);
-}
-
-
-void MainWindow::on_fileOpen3_clicked()
-{
-    data414 = selectFile();
-    ui->fileName3->setText(data414);
-}
-
-
-void MainWindow::on_fileOpen4_clicked()
-{
-    data475 = selectFile();
-    ui->fileName4->setText(data475);
-}
-
-
 void MainWindow::on_actionExit_triggered()
 {
     QMessageBox messageBox;
@@ -127,25 +101,16 @@ void MainWindow::on_actionExit_triggered()
 
 void MainWindow::on_actionAbout_triggered()
 {
-    QMessageBox::information(this, "About","FretAnalyzer Version: 0.0\nBy: Dat Do, Patrick Cammall, Shilpa Chirackel, and Hui Yang");
+    QMessageBox::information(this, "About","FretAnalyzer Version: 0.1\nBy: Dat Do, Hui Yang, and Patrick Cammall");
 }
 
 
 // Clears all existing data
 void MainWindow::on_actionNew_triggered()
 {
-    ui->fileName1->setText("");
-    ui->fileName2->setText("");
-    ui->fileName3->setText("");
-    ui->fileName4->setText("");
-    blank414 = "";
-    blank475 = "";
-    data414 = "";
-    data475 = "";
-    ui->xValText->setText("");
-
     ui->resultsFrame->setText("");
     QFile::remove(plotPath);
     QImage plot(plotPath);
+    ui->inputTable->clearContents();
     ui->plotFrame->setPixmap(QPixmap::fromImage(plot));
 }
