@@ -1,25 +1,15 @@
-make permanent labels for input
-user selects number of x values 1 - 50 max gray out unused squares
-create n squares for x values
-user guide 
-documentation
+1. Documentation
+2. Create grid on GUI to take input from
+3. New project wizard to specify: n replicate values && n data sets, generating GUI input format accordingly
+4. Modify fret.py to average n replicate values and display std dev
+5. Create python script to graph multiple sets of data
+6. Export report as PDF
+7. User guide (to be completed after everything is settled)
 
 
-expor tto report
-draw line for - x axis
 
 
-Enter a plot and a single Y value for each point OR
-Enter n replicate values
-average of 3 values for each concentration + std dev
 
-
-make grid like format
-choose how many Yn data sets to calculate
-How many sets of concentrations of donor?
-
-choose how many sets of data for each y take average and stddev and put on graph
+draw line for 0 x axis on graph
 How many replicate values?
-
-
-Output in multiple graphs or just one ALL DATA
+How many sets of concentrations of donor?
