@@ -28,7 +28,7 @@ void MainWindow::on_calculateBtn_clicked()
     ui->statusBar->showMessage(tr("Calculating..."));
     QFile::remove(plotPath);    // removes old plot (if it exists) prior to new generation
 
-    QString x = "";
+    QString x = "10 9 8 7 6 5 4 3 2 1 0.5 0";
     // FIXME: Grab values from C++ functions instead of hardcoded
     QString y = "588971.60 629608.20 601458.60 591147.50 521218.80 509342.30 497718.90 430004.60 440683.00 279258.60 198418.50 -21109.88";
     QString a = "1";

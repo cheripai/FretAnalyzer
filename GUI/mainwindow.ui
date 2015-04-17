@@ -45,7 +45,7 @@
        <enum>QTabWidget::Rounded</enum>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="inputTab">
        <attribute name="title">
@@ -224,8 +224,6 @@
          </widget>
         </item>
        </layout>
-       <zorder>plotFrame</zorder>
-       <zorder>inputTable</zorder>
       </widget>
       <widget class="QWidget" name="resultsTab">
        <attribute name="title">
@@ -251,7 +249,7 @@
          <widget class="QTextEdit" name="resultsFrame">
           <property name="minimumSize">
            <size>
-            <width>0</width>
+            <width>300</width>
             <height>0</height>
            </size>
           </property>
