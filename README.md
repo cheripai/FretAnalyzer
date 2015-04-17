@@ -1,4 +1,5 @@
-##Major tasks (select one and strikethrough when completed)
+##Major tasks 
+####Select one and strikethrough when completed.
 
 1. Documentation **in markdown format**  **(Hui)**
 2. ~~Create grid on GUI to take input from~~ **(Dat)**
