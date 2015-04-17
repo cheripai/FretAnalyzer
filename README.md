@@ -1,7 +1,21 @@
-#FretAnalyzer
-![](https://github.com/CheriPai/FretAnalyzer/raw/master/GUITrialOne/screenshotgui.png?raw=true)
+##Major tasks (select one)
 
-#TODO:
-1. User should be able to save and reload their session 
-2. Calculate button should grab file paths from textedits (in case of manual entry)
-3. Write tests for all components
+1. Documentation **in markdown format**
+2. Create grid on GUI to take input from **(Dat)**
+3. New project wizard to specify: n replicate values && n data sets, generating GUI input format accordingly (see prism screenshot)
+4. Modify fret.py to average n replicate values and display std dev
+5. Create python script to graph multiple sets of data
+6. Export report as PDF
+7. User guide (to be completed after everything is settled)
+
+
+
+
+
+
+-----------------------------
+draw line for 0 x axis on graph
+
+How many replicate values?
+
+How many sets of concentrations of donor?
