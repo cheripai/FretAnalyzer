@@ -1,0 +1,25 @@
+make permanent labels for input
+user selects number of x values 1 - 50 max gray out unused squares
+create n squares for x values
+user guide 
+documentation
+
+
+expor tto report
+draw line for - x axis
+
+
+Enter a plot and a single Y value for each point OR
+Enter n replicate values
+average of 3 values for each concentration + std dev
+
+
+make grid like format
+choose how many Yn data sets to calculate
+How many sets of concentrations of donor?
+
+choose how many sets of data for each y take average and stddev and put on graph
+How many replicate values?
+
+
+Output in multiple graphs or just one ALL DATA
