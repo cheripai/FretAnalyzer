@@ -22,10 +22,7 @@ FORMS    += mainwindow.ui
 RESOURCES += \
     resources.qrc
 
-DISTFILES +=
-
-copydata.commands = $(COPY_DIR) $$PWD/fret.py $$OUT_PWD
-first.depends = $(first) copydata
-export(first.depends)
-export(copydata.commands)
-QMAKE_EXTRA_TARGETS += first copydata
+install_it.path = $$OUT_PWD
+install_it.files = fret.py
+INSTALLS += \
+    install_it
