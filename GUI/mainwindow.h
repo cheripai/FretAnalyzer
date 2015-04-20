@@ -33,6 +33,9 @@ private:
     QString selectFile();
     QString plotPath;
     GridStr readGrid();
+    int nSets;
+    int nReplicates;
+    void organizeInputTable(int nSets, int nReplicates);
 };
 
 #endif // MAINWINDOW_H

@@ -11,14 +11,40 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     plotPath = "plot.png";
-    ui->inputTable->setColumnCount(64);
-    ui->inputTable->setRowCount(64);
+    nSets = 3;
+    nReplicates = 3;
+    organizeInputTable(nSets, nReplicates);
 }
 
 MainWindow::~MainWindow()
 {
     QFile::remove(plotPath);
     delete ui;
+}
+
+
+void MainWindow::organizeInputTable(int nSets, int nReplicates)
+{
+    ui->inputTable->setColumnCount(64);
+    ui->inputTable->setRowCount(64);
+
+    QTableWidgetItem *gray = new QTableWidgetItem("");
+    gray->setBackgroundColor(Qt::gray);
+    ui->inputTable->setItem(0, 0, gray);
+
+    QTableWidgetItem *x = new QTableWidgetItem("X");
+    x->setTextAlignment(Qt::AlignCenter);
+    x->setBackgroundColor(Qt::gray);
+    ui->inputTable->setItem(1, 0, x);
+
+    for(int i = 0; i < nSets; ++i)
+    {
+        QTableWidgetItem *y = new QTableWidgetItem(QString("Y%1").arg(i+1));
+        y->setTextAlignment(Qt::AlignCenter);
+        y->setBackgroundColor(Qt::gray);
+        ui->inputTable->setItem(0, i * nReplicates + 1, y);
+        ui->inputTable->setSpan(0, i * nReplicates + 1, 1, nReplicates);
+    }
 }
 
 
