@@ -78,6 +78,34 @@ QByteArray MainWindow::runFretPy(QString x, QString y, QString a, QString plotPa
 }
 
 
+GridStr MainWindow::readGrid()
+{
+    GridStr grid;
+    int rows = ui->inputTable->rowCount();
+    int columns = ui->inputTable->columnCount();
+
+    grid.resize(rows);
+
+    for(int i = 0; i < rows; ++i)
+    {
+        grid[i].resize(columns);
+        for(int j = 0; j < columns; ++j)
+        {
+            if(ui->inputTable->item(i, j))
+            {
+                grid[i][j] = ui->inputTable->item(i, j)->text();
+            }
+            else
+            {
+                grid[i][j] = '\0';
+            }
+        }
+    }
+
+    return grid;
+}
+
+
 QString MainWindow::selectFile()
 {
     QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"), "",

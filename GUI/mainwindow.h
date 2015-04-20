@@ -4,6 +4,9 @@
 #include <QMainWindow>
 #include <QProcess>
 #include <QString>
+#include <QVector>
+
+typedef QVector<QVector<QString> > GridStr;
 
 namespace Ui {
 class MainWindow;
@@ -29,6 +32,7 @@ private:
     QByteArray runFretPy(QString x, QString y, QString a, QString plotPath);
     QString selectFile();
     QString plotPath;
+    GridStr readGrid();
 };
 
 #endif // MAINWINDOW_H
