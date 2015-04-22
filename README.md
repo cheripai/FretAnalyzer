@@ -5,10 +5,11 @@
 2. ~~Create grid on GUI to take input from~~ **(Dat)**
 3. Take input from grid to perform calculations on **(Dat)**
 4. New project wizard to specify: n replicate values && n data sets, generating GUI input format accordingly (see prism screenshot)**(Hui)**
-5. Modify fret.py to average n replicate values and display std dev (Patrick)
-6. Create python script to graph multiple sets of data (Patrick)
-7. Export report as PDF
-8. User guide (to be completed after everything is settled)
+5. Implement copy and paste functions on inputGrid
+6. Modify fret.py to average n replicate values and display std dev (Patrick)
+7. Create python script to graph multiple sets of data (Patrick)
+8. Export report as PDF
+9. User guide (to be completed after everything is settled)
 
 
 
