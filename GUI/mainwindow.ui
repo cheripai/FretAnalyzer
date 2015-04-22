@@ -91,7 +91,7 @@
            <number>0</number>
           </property>
           <property name="editTriggers">
-           <set>QAbstractItemView::AnyKeyPressed|QAbstractItemView::EditKeyPressed|QAbstractItemView::SelectedClicked</set>
+           <set>QAbstractItemView::AnyKeyPressed|QAbstractItemView::EditKeyPressed</set>
           </property>
           <property name="alternatingRowColors">
            <bool>true</bool>
