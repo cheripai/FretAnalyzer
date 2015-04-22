@@ -5,6 +5,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -16,6 +17,7 @@ MainWindow::MainWindow(QWidget *parent) :
     organizeInputTable(nSets, nReplicates);
 }
 
+
 MainWindow::~MainWindow()
 {
     QFile::remove(plotPath);
@@ -23,6 +25,7 @@ MainWindow::~MainWindow()
 }
 
 
+// Sets up input table format based on number of sets and replicates determined in startup wizard
 void MainWindow::organizeInputTable(int nSets, int nReplicates)
 {
     ui->inputTable->setColumnCount(64);
@@ -48,7 +51,6 @@ void MainWindow::organizeInputTable(int nSets, int nReplicates)
 }
 
 
-// TODO: read filenames from textboxes when calculate is clicked (in case user manually typed in path)
 void MainWindow::on_calculateBtn_clicked()
 {
     ui->statusBar->showMessage(tr("Calculating..."));
@@ -67,9 +69,14 @@ void MainWindow::on_calculateBtn_clicked()
     QImage plot(plotPath);
     ui->plotFrame->setPixmap(QPixmap::fromImage(plot));
     ui->statusBar->showMessage(tr("Finished."));
+
+    // FIXME: Testing function calls
+    GridStr grid = readGrid();
+    QVector<double> xValues = getXValues(grid);
 }
 
 
+// Calls external python script to perform nonlinear regression
 QByteArray MainWindow::runFretPy(QString x, QString y, QString a, QString plotPath)
 {
     QProcess fretPy;
@@ -104,6 +111,7 @@ QByteArray MainWindow::runFretPy(QString x, QString y, QString a, QString plotPa
 }
 
 
+// returns 2d vector<QString> of data currently in inputTable
 GridStr MainWindow::readGrid()
 {
     GridStr grid;
@@ -132,6 +140,24 @@ GridStr MainWindow::readGrid()
 }
 
 
+// Extracts X values from grid of data after readGrid()
+QVector<double> MainWindow::getXValues(GridStr grid)
+{
+    int topSpacing = 2;     // first two rows are not used for x values
+
+    QVector<double> xValues;
+    xValues.resize(grid[0].size()-topSpacing);
+
+    for(int i = topSpacing; i < grid[0].size(); ++i)
+    {
+        xValues[i-topSpacing] = grid[i][0].toDouble();
+    }
+
+    return xValues;
+}
+
+
+// returns filepath of file selection from wizard
 QString MainWindow::selectFile()
 {
     QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"), "",

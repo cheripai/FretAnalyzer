@@ -7,6 +7,8 @@
 #include <QVector>
 
 typedef QVector<QVector<QString> > GridStr;
+typedef QVector<QVector<double> > GridDbl;
+
 
 namespace Ui {
 class MainWindow;
@@ -29,13 +31,14 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
-    QByteArray runFretPy(QString x, QString y, QString a, QString plotPath);
-    QString selectFile();
-    QString plotPath;
-    GridStr readGrid();
     int nSets;
     int nReplicates;
+    QString plotPath;
     void organizeInputTable(int nSets, int nReplicates);
+    QByteArray runFretPy(QString x, QString y, QString a, QString plotPath);
+    GridStr readGrid();
+    QVector<double> getXValues(GridStr grid);
+    QString selectFile();
 };
 
 #endif // MAINWINDOW_H
