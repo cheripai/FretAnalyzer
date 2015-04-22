@@ -28,14 +28,19 @@ private slots:
     void on_actionExit_triggered();
     void on_actionNew_triggered();
 
+    void on_actionCopy_triggered();
+
 private:
     Ui::MainWindow *ui;
     int nSets;
     int nReplicates;
     QString plotPath;
+    QClipboard *clipboard;
     void organizeInputTable(int nSets, int nReplicates);
     GridStr readGrid();
     QString selectFile();
+    //void paste();
+    void copy();
 };
 
 #endif // MAINWINDOW_H

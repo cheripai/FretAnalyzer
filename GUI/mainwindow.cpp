@@ -1,3 +1,4 @@
+#include <QClipboard>
 #include <QDebug>
 #include <QFileDialog>
 #include <QMessageBox>
@@ -14,6 +15,7 @@ MainWindow::MainWindow(QWidget *parent) :
     plotPath = "plot.png";
     nSets = 3;
     nReplicates = 3;
+    clipboard = QApplication::clipboard();
     organizeInputTable(nSets, nReplicates);
 }
 
@@ -90,6 +92,53 @@ QString MainWindow::selectFile()
 }
 
 
+/*
+void MainWindow::paste()
+{
+    QTableWidget *table = ui->inputTable;
+    QList <QTableWidgetSelectionRange> range = table->selectedRanges();
+    QString str = QApplication::clipboard()->text();
+    QStringList rows = str.split('\n');
+    int numRows = table->rowCount();
+    int numColumns = table->columnCount();
+
+    if(range.rowCount() * range.columnCount() != 1
+       && (range.rowCount() != numRows
+       || range.columnCount() != numColumns))
+    {
+        QMessageBox::information(this, tr("Spreadsheet"),
+                                 tr("The information cannot be pasted because the copy and paste areas aren't the same size"));
+        return;
+    }
+
+    for(int i = 0; i < numRows; ++i)
+    {
+        QStringList columns = rows[i].split('\t');
+        for(int j = 0; j < numColumns; ++j)
+        {
+            int row = range.topRow() + i;
+            int column = range.leftColumn() + j;
+            if(row < RowCount && column < ColumnCount)
+            {
+                setFormula(row, column, columns[j]);
+            }
+        }
+    }
+}
+*/
+
+
+void MainWindow::copy()
+{
+    QString s;
+    for(int i = 0; i < ui->inputTable->selectedItems().size(); ++i)
+    {
+       s.append(ui->inputTable->selectedItems()[i]->text());
+    }
+    clipboard->setText(s);
+}
+
+
 void MainWindow::on_calculateBtn_clicked()
 {
     ui->statusBar->showMessage(tr("Calculating..."));
@@ -141,4 +190,9 @@ void MainWindow::on_actionNew_triggered()
     QImage plot(plotPath);
     ui->inputTable->clearContents();
     ui->plotFrame->setPixmap(QPixmap::fromImage(plot));
+}
+
+void MainWindow::on_actionCopy_triggered()
+{
+    copy();
 }
