@@ -1,7 +1,6 @@
 #include <QDebug>
 #include <QFileDialog>
 #include <QMessageBox>
-#include <QProcess>
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "calculate.h"
