@@ -4,6 +4,7 @@
 #include <QProcess>
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "calculate.h"
 
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -51,66 +52,6 @@ void MainWindow::organizeInputTable(int nSets, int nReplicates)
 }
 
 
-void MainWindow::on_calculateBtn_clicked()
-{
-    ui->statusBar->showMessage(tr("Calculating..."));
-    QFile::remove(plotPath);    // removes old plot (if it exists) prior to new generation
-
-    QString x = "10 9 8 7 6 5 4 3 2 1 0.5 0";
-    // FIXME: Grab values from C++ functions instead of hardcoded
-    QString y = "588971.60 629608.20 601458.60 591147.50 521218.80 509342.30 497718.90 430004.60 440683.00 279258.60 198418.50 -21109.88";
-    QString a = "1";
-
-    // ASSERT that x y and a are of the right length and properly formatted
-    QByteArray result = runFretPy(x, y, a, plotPath);
-    ui->resultsFrame->setText(result);
-
-    // Presents plot on GUI
-    QImage plot(plotPath);
-    ui->plotFrame->setPixmap(QPixmap::fromImage(plot));
-    ui->statusBar->showMessage(tr("Finished."));
-
-    // FIXME: Testing function calls
-    GridStr grid = readGrid();
-    QVector<double> xValues = getXValues(grid);
-}
-
-
-// Calls external python script to perform nonlinear regression
-QByteArray MainWindow::runFretPy(QString x, QString y, QString a, QString plotPath)
-{
-    QProcess fretPy;
-    QStringList arguments;
-    QByteArray result;
-    QByteArray error;
-
-    if(plotPath != "")
-    {
-        arguments << "-p" << plotPath;
-    }
-
-    // Starts python script and writes data to stdin of script
-    fretPy.start("./fret.py", arguments);
-    fretPy.write(x.toLatin1().append('\n'));
-    fretPy.write(y.toLatin1().append('\n'));
-    fretPy.write(a.toLatin1().append('\n'));
-    fretPy.closeWriteChannel();
-    fretPy.waitForFinished();
-
-    result = fretPy.readAll();
-    error = fretPy.readAllStandardError();
-    fretPy.close();
-
-    if(error != "")
-    {
-        qDebug() << error;
-        result = error;
-    }
-
-    return result;
-}
-
-
 // returns 2d vector<QString> of data currently in inputTable
 GridStr MainWindow::readGrid()
 {
@@ -140,23 +81,6 @@ GridStr MainWindow::readGrid()
 }
 
 
-// Extracts X values from grid of data after readGrid()
-QVector<double> MainWindow::getXValues(GridStr grid)
-{
-    int topSpacing = 2;     // first two rows are not used for x values
-
-    QVector<double> xValues;
-    xValues.resize(grid[0].size()-topSpacing);
-
-    for(int i = topSpacing; i < grid[0].size(); ++i)
-    {
-        xValues[i-topSpacing] = grid[i][0].toDouble();
-    }
-
-    return xValues;
-}
-
-
 // returns filepath of file selection from wizard
 QString MainWindow::selectFile()
 {
@@ -164,6 +88,31 @@ QString MainWindow::selectFile()
         tr("Text Files (*.txt)"));
 
     return fileName;
+}
+
+
+void MainWindow::on_calculateBtn_clicked()
+{
+    ui->statusBar->showMessage(tr("Calculating..."));
+    QFile::remove(plotPath);    // removes old plot (if it exists) prior to new generation
+
+    QString x = "10 9 8 7 6 5 4 3 2 1 0.5 0";
+    // FIXME: Grab values from C++ functions instead of hardcoded
+    QString y = "588971.60 629608.20 601458.60 591147.50 521218.80 509342.30 497718.90 430004.60 440683.00 279258.60 198418.50 -21109.88";
+    QString a = "1";
+
+    // ASSERT that x y and a are of the right length and properly formatted
+    QByteArray result = runFretPy(x, y, a, plotPath);
+    ui->resultsFrame->setText(result);
+
+    // Presents plot on GUI
+    QImage plot(plotPath);
+    ui->plotFrame->setPixmap(QPixmap::fromImage(plot));
+    ui->statusBar->showMessage(tr("Finished."));
+
+    // FIXME: Testing function calls
+    GridStr grid = readGrid();
+    QVector<double> xValues = getXValues(grid);
 }
 
 

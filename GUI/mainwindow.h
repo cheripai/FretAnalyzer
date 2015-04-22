@@ -2,9 +2,9 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <QProcess>
 #include <QString>
 #include <QVector>
+
 
 typedef QVector<QVector<QString> > GridStr;
 typedef QVector<QVector<double> > GridDbl;
@@ -20,7 +20,6 @@ class MainWindow : public QMainWindow
 
 public:
     explicit MainWindow(QWidget *parent = 0);
-    void read(QString fileName);
     ~MainWindow();
 
 private slots:
@@ -35,9 +34,7 @@ private:
     int nReplicates;
     QString plotPath;
     void organizeInputTable(int nSets, int nReplicates);
-    QByteArray runFretPy(QString x, QString y, QString a, QString plotPath);
     GridStr readGrid();
-    QVector<double> getXValues(GridStr grid);
     QString selectFile();
 };
 
