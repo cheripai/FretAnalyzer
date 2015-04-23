@@ -130,12 +130,36 @@ void MainWindow::paste()
 
 void MainWindow::copy()
 {
-    QString s;
-    for(int i = 0; i < ui->inputTable->selectedItems().size(); ++i)
+    QTableWidget *view = ui->inputTable;
+    QAbstractItemModel *model = view->model();
+    QItemSelectionModel *selection = view->selectionModel();
+    QModelIndexList indexes = selection->selectedIndexes();
+
+    QString selected_text;
+    QModelIndex current;
+    QModelIndex previous = indexes.first();
+    qDebug() << "Number of cells:" << indexes.size();
+
+    foreach(current, indexes)
     {
-       s.append(ui->inputTable->selectedItems()[i]->text());
+        QVariant data = model->data(current);
+        QString text = data.toString();
+        selected_text.append(text);
+
+        //FIXME: error because indices iterate by row THEN column.
+        qDebug() << current.row() << " " << current.column();
+
+        if(current.row() != previous.row())
+        {
+            selected_text.append('\n');
+        }
+        else
+        {
+            selected_text.append('\t');
+        }
+        previous = current;
     }
-    clipboard->setText(s);
+    clipboard->setText(selected_text);
 }
 
 
