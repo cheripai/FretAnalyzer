@@ -162,6 +162,20 @@ void MainWindow::copy()
 }
 
 
+void MainWindow::del()
+{
+    QTableWidget *view = ui->inputTable;
+    QItemSelectionModel *selection = view->selectionModel();
+    QModelIndexList indexes = selection->selectedIndexes();
+    QModelIndex current = indexes.first();
+
+    foreach(current, indexes)
+    {
+        view->setItem(current.row(), current.column(), NULL);
+    }
+}
+
+
 void MainWindow::on_calculateBtn_clicked()
 {
     ui->statusBar->showMessage(tr("Calculating..."));
@@ -218,4 +232,9 @@ void MainWindow::on_actionNew_triggered()
 void MainWindow::on_actionCopy_triggered()
 {
     copy();
+}
+
+void MainWindow::on_actionDelete_triggered()
+{
+   del();
 }

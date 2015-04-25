@@ -27,8 +27,9 @@ private slots:
     void on_actionAbout_triggered();
     void on_actionExit_triggered();
     void on_actionNew_triggered();
-
     void on_actionCopy_triggered();
+
+    void on_actionDelete_triggered();
 
 private:
     Ui::MainWindow *ui;
@@ -41,6 +42,7 @@ private:
     QString selectFile();
     //void paste();
     void copy();
+    void del();
 };
 
 #endif // MAINWINDOW_H
