@@ -134,15 +134,17 @@ void MainWindow::copy()
     QAbstractItemModel *model = view->model();
     QItemSelectionModel *selection = view->selectionModel();
     QModelIndexList indexes = selection->selectedIndexes();
+    qSort(indexes);
 
     QString selected_text;
     QModelIndex current;
     QModelIndex previous = indexes.first();
+    indexes.removeFirst();
     qDebug() << "Number of cells:" << indexes.size();
 
     foreach(current, indexes)
     {
-        QVariant data = model->data(current);
+        QVariant data = model->data(previous);
         QString text = data.toString();
         selected_text.append(text);
 
@@ -159,6 +161,7 @@ void MainWindow::copy()
         }
         previous = current;
     }
+    selected_text.append(model->data(current).toString());
     clipboard->setText(selected_text);
 }
 
