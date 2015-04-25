@@ -140,16 +140,12 @@ void MainWindow::copy()
     QModelIndex current;
     QModelIndex previous = indexes.first();
     indexes.removeFirst();
-    qDebug() << "Number of cells:" << indexes.size();
 
     foreach(current, indexes)
     {
         QVariant data = model->data(previous);
         QString text = data.toString();
         selected_text.append(text);
-
-        //FIXME: error because indices iterate by row THEN column.
-        qDebug() << current.row() << " " << current.column();
 
         if(current.row() != previous.row())
         {
