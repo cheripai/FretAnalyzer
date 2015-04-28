@@ -189,6 +189,11 @@ void MainWindow::on_calculateBtn_clicked()
     // FIXME: Testing function calls
     GridStr grid = readGrid();
     QVector<double> xValues = getXValues(grid);
+    GridDbl yValues = getYValues(grid);
+    if(xValues.length() != yValues.length()-1)
+    {
+        qDebug() << "Error: x and y have different sizes";
+    }
 }
 
 
