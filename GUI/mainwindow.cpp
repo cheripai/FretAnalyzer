@@ -2,6 +2,8 @@
 #include <QDebug>
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QPainter>
+#include <QPrinter>
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "calculate.h"
@@ -243,5 +245,15 @@ void MainWindow::on_actionDelete_triggered()
 
 void MainWindow::on_actionExport_triggered()
 {
+    QString filename = QFileDialog::getSaveFileName(this, tr("Save File"), "untitled", tr("PDF Document (*.pdf)"));
+    QPrinter printer;
+    printer.setOutputFormat(QPrinter::PdfFormat);
+    printer.setOutputFileName(filename.append(".pdf"));
 
+    ui->resultsFrame->print(&printer);
+
+    QPixmap plot(plotPath);
+    QPainter painter(&printer);
+    painter.drawPixmap(0, 100, 700, 500, plot);
+    painter.end();
 }
