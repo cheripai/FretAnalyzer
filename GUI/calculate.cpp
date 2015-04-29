@@ -19,6 +19,27 @@ QVector<double> getXValues(GridStr grid)
 }
 
 
+// Extracts set of Y values from grid of data after readGrid()
+GridDbl getYValues(GridStr grid)
+{
+    int topSpacing = 1;
+    int leftSpacing = 1;
+
+    GridDbl yValues;
+    yValues.resize(grid.size()-topSpacing);
+
+    for(int i = topSpacing; i < grid.size(); ++i)
+    {
+        yValues[i-topSpacing].resize(grid[i].size()-leftSpacing);
+        for(int j = leftSpacing; j < grid[i].size(); ++j)
+        {
+            yValues[i-topSpacing][j-leftSpacing] = grid[i][j].toDouble();
+        }
+    }
+
+    return yValues;
+}
+
 
 // Calls external python script to perform nonlinear regression
 QByteArray runFretPy(QString x, QString y, QString a, QString plotPath)

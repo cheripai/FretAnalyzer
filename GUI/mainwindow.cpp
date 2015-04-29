@@ -92,62 +92,24 @@ QString MainWindow::selectFile()
 }
 
 
-/*
-void MainWindow::paste()
-{
-    QTableWidget *table = ui->inputTable;
-    QList <QTableWidgetSelectionRange> range = table->selectedRanges();
-    QString str = QApplication::clipboard()->text();
-    QStringList rows = str.split('\n');
-    int numRows = table->rowCount();
-    int numColumns = table->columnCount();
-
-    if(range.rowCount() * range.columnCount() != 1
-       && (range.rowCount() != numRows
-       || range.columnCount() != numColumns))
-    {
-        QMessageBox::information(this, tr("Spreadsheet"),
-                                 tr("The information cannot be pasted because the copy and paste areas aren't the same size"));
-        return;
-    }
-
-    for(int i = 0; i < numRows; ++i)
-    {
-        QStringList columns = rows[i].split('\t');
-        for(int j = 0; j < numColumns; ++j)
-        {
-            int row = range.topRow() + i;
-            int column = range.leftColumn() + j;
-            if(row < RowCount && column < ColumnCount)
-            {
-                setFormula(row, column, columns[j]);
-            }
-        }
-    }
-}
-*/
-
-
 void MainWindow::copy()
 {
     QTableWidget *view = ui->inputTable;
     QAbstractItemModel *model = view->model();
     QItemSelectionModel *selection = view->selectionModel();
     QModelIndexList indexes = selection->selectedIndexes();
+    qSort(indexes);
 
     QString selected_text;
     QModelIndex current;
     QModelIndex previous = indexes.first();
-    qDebug() << "Number of cells:" << indexes.size();
+    indexes.removeFirst();
 
     foreach(current, indexes)
     {
-        QVariant data = model->data(current);
+        QVariant data = model->data(previous);
         QString text = data.toString();
         selected_text.append(text);
-
-        //FIXME: error because indices iterate by row THEN column.
-        qDebug() << current.row() << " " << current.column();
 
         if(current.row() != previous.row())
         {
@@ -159,7 +121,49 @@ void MainWindow::copy()
         }
         previous = current;
     }
+    selected_text.append(model->data(current).toString());
+    selected_text.append('\n');
     clipboard->setText(selected_text);
+}
+
+
+void MainWindow::paste()
+{
+    QTableWidget *view = ui->inputTable;
+    QItemSelectionModel *selection = view->selectionModel();
+    QModelIndexList indexes = selection->selectedIndexes();
+
+    QString selected_text = clipboard->text();
+    QStringList cells = selected_text.split(QRegExp(QLatin1String("\\n|\\t")));
+
+    int rows = selected_text.count(QLatin1Char('\n'));
+    int cols = cells.size() / rows;
+
+    int cell = 0;
+    int r = selection->currentIndex().row();
+    int c = selection->currentIndex().column();
+    for(int row = r; row < rows + r; ++row)
+    {
+        for(int col = c; col < cols + c; ++col, ++cell)
+        {
+            QTableWidgetItem *newItem = new QTableWidgetItem(cells[cell]);
+            view->setItem(row, col, newItem);
+        }
+    }
+}
+
+
+void MainWindow::del()
+{
+    QTableWidget *view = ui->inputTable;
+    QItemSelectionModel *selection = view->selectionModel();
+    QModelIndexList indexes = selection->selectedIndexes();
+    QModelIndex current = indexes.first();
+
+    foreach(current, indexes)
+    {
+        view->setItem(current.row(), current.column(), NULL);
+    }
 }
 
 
@@ -185,6 +189,11 @@ void MainWindow::on_calculateBtn_clicked()
     // FIXME: Testing function calls
     GridStr grid = readGrid();
     QVector<double> xValues = getXValues(grid);
+    GridDbl yValues = getYValues(grid);
+    if(xValues.length() != yValues.length()-1)
+    {
+        qDebug() << "Error: x and y have different sizes";
+    }
 }
 
 
@@ -214,9 +223,20 @@ void MainWindow::on_actionNew_triggered()
     QImage plot(plotPath);
     ui->inputTable->clearContents();
     ui->plotFrame->setPixmap(QPixmap::fromImage(plot));
+    organizeInputTable(nSets, nReplicates);
 }
 
 void MainWindow::on_actionCopy_triggered()
 {
     copy();
+}
+
+void MainWindow::on_actionPaste_triggered()
+{
+    paste();
+}
+
+void MainWindow::on_actionDelete_triggered()
+{
+   del();
 }
