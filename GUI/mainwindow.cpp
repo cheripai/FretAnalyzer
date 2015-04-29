@@ -240,3 +240,8 @@ void MainWindow::on_actionDelete_triggered()
 {
    del();
 }
+
+void MainWindow::on_actionExport_triggered()
+{
+
+}

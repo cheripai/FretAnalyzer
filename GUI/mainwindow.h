@@ -30,7 +30,7 @@ private slots:
     void on_actionCopy_triggered();
     void on_actionPaste_triggered();
     void on_actionDelete_triggered();
-
+    void on_actionExport_triggered();
 
 private:
     Ui::MainWindow *ui;
