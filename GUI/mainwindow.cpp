@@ -9,16 +9,21 @@
 #include "calculate.h"
 
 
-MainWindow::MainWindow(QWidget *parent) :
+MainWindow::MainWindow(int nRow, int nSet, int nRep, QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
     plotPath = "plot.png";
-    nSets = 3;
-    nReplicates = 3;
+    if(nRow <20)   // ensure at least 20 rows
+        nRows =20;
+    else{
+        nRows = nRow;
+    }
+    nSets = nSet;
+    nReplicates = nRep;
     clipboard = QApplication::clipboard();
-    organizeInputTable(nSets, nReplicates);
+    organizeInputTable( nRows, nSets, nReplicates);
 }
 
 
@@ -30,10 +35,10 @@ MainWindow::~MainWindow()
 
 
 // Sets up input table format based on number of sets and replicates determined in startup wizard
-void MainWindow::organizeInputTable(int nSets, int nReplicates)
+void MainWindow::organizeInputTable(int nRows, int nSets, int nReplicates)
 {
-    ui->inputTable->setColumnCount(64);
-    ui->inputTable->setRowCount(64);
+    ui->inputTable->setColumnCount(nSets *nReplicates +1);
+    ui->inputTable->setRowCount(nRows);
 
     QTableWidgetItem *gray = new QTableWidgetItem("");
     gray->setBackgroundColor(Qt::gray);
@@ -225,7 +230,7 @@ void MainWindow::on_actionNew_triggered()
     QImage plot(plotPath);
     ui->inputTable->clearContents();
     ui->plotFrame->setPixmap(QPixmap::fromImage(plot));
-    organizeInputTable(nSets, nReplicates);
+    organizeInputTable(nRows, nSets, nReplicates);
 }
 
 void MainWindow::on_actionCopy_triggered()
