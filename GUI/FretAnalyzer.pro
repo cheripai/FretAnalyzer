@@ -12,21 +12,19 @@ TARGET = FretAnalyzer
 TEMPLATE = app
 
 
-SOURCES += main.cpp\
-        mainwindow.cpp \
-    calculate.cpp \
-    dialog.cpp
+SOURCES += main.cpp \
+           mainwindow.cpp \
+           calculate.cpp \
+           dialog.cpp
 
 HEADERS  += mainwindow.h \
-    calculate.h \
-    dialog.h
+            calculate.h \
+            dialog.h
 
 FORMS    += mainwindow.ui
 
-RESOURCES += \
-    resources.qrc
+RESOURCES += resources.qrc
 
 install_it.path = $$OUT_PWD
 install_it.files = fret.py
-INSTALLS += \
-    install_it
+INSTALLS += install_it

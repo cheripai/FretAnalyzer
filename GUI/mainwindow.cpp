@@ -15,9 +15,12 @@ MainWindow::MainWindow(int nRow, int nSet, int nRep, QWidget *parent) :
 {
     ui->setupUi(this);
     plotPath = "plot.png";
-    if(nRow <20)   // ensure at least 20 rows
-        nRows =20;
-    else{
+    if(nRow < 20)   // ensure at least 20 rows
+    {
+        nRows = 20;
+    }
+    else
+    {
         nRows = nRow;
     }
     nSets = nSet;

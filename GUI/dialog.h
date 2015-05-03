@@ -23,19 +23,12 @@ class Dialog : public QDialog
 public:
     Dialog();
     QSpinBox *rowValueSpinBox;
-     QSpinBox *yvalueSpinBox;
-     QSpinBox *numSetsSpinBox;
+    QSpinBox *yvalueSpinBox;
+    QSpinBox *numSetsSpinBox;
 private:
-
     void createFormGroupBox();
-
-
-
     QGroupBox *formGroupBox;
-
     QDialogButtonBox *buttonBox;
-
-
     QAction *exitAction;
 };
 
