@@ -4,13 +4,14 @@ from decimal import *
 import json
 from lmfit import conf_interval, report_ci, fit_report, minimize, Parameters, Parameter
 from matplotlib.pyplot import plot, savefig
-from numpy import array, linspace, sqrt
-
+from numpy import array, linspace, sqrt, zeros, reshape
+import sys
 
 def emfret(params, x, a):
     kd = params['kd'].value
     emfretmax = params['emfretmax'].value
     return emfretmax * (1 - (2 * kd) / (x - a + kd + sqrt((x - a - kd) ** 2 + 4 * kd * x)))
+    
 
 
 def residuals(params, x, y, a):
@@ -18,10 +19,18 @@ def residuals(params, x, y, a):
 
 
 def create_plot(filename, result, x, y, a):
-    xx = linspace(x.min(), x.max(), 50)
+    xx = linspace(x.min(), x.max(), 50)         
     yy = emfret(result.params, xx, a)
-    plot(x, y, 'bo', xx, yy, 'g-')
+    z = linspace(x.min(), x.max(), 50);
+    #this loop plots each set of points held in y
+    for i in y: 
+        plot(x, i, 'bo')
+
+    #this plots the emfret results (xx and yy), and plots a horizontal black line ( xx, z)
+    #the horizontal black line is strictly for orienting where the origin is.
+    plot(xx, yy, 'g-', xx, z, 'k-') 
     savefig(filename, bbox_inches='tight', dpi = 400)
+
 
 
 def init_argparse():
@@ -32,45 +41,61 @@ def init_argparse():
     return parser.parse_args()
     
 
-def main():
-
+def main(): 
     # sets up command line argument parser
     args = init_argparse()
 
-
-    # grab data from file to run lmfit on
-    if(args.input):
+    if(args.input): #has i flag, read from specified file
+        
         f = open(args.input, 'r')
         x = array([float(val) for val in f.readline().split()])
-        y = array([float(val) for val in f.readline().split()])
+
+        # IMPORTANT: I've altered the structure of the format for reading from files.
+        #            It is now:
+        #               X values
+        #               number of repeated measurements
+        #               A values
+        #               Y values (continuing to end of file)
+        #
+        #            This format prevents over-consuming (possibly getting the A values as Y)            
+        
+        num_rep = int( f.readline() )        
         a = array([float(val) for val in f.readline().split()])
+
+        #the remaining lines are all going to be the values for y
+        y = zeros( (len(a), len(x)) ) #init y to be 2D array of zeros,
+                                      #num rows is equal to number of A values, num cols equal to number of X values
+        count = 0
+        for line in f: #eats the remaining lines of the file
+            temp = ( array([float(val) for val in line.split()]) )
+            if ( num_rep == 1): #this condition is specifically for the case where there is only one measurement
+                num_rep = len(temp) #instead of creating large if/else blocks, it allows reuse of code below
+            
+            if ( len(temp) == 0): #this condition specifically checks if we've read an empty line.
+                break; #if so, stop everything and move on.
+
+
+
+            #now at this part, average the values of y, this part will be skipped by the len(temp) == 0 above
+            #num_rep tells us how many values of y to average at one time, hence the increment by num_rep
+            #averaged temp is an array holding the averaged values. Initialized to an array of 0s
+            averaged_temp = zeros( (len(temp) / num_rep) )
+            for i in range( 0, len(temp) - num_rep, num_rep ): #I is the starting position of values to be averaged
+                avg = 0
+                
+                for j in range( 0, num_rep): #j is the offset from that starting position
+                    avg += temp[i+j]
+                    
+                avg = avg / num_rep
+                averaged_temp[ i / num_rep] = avg #remember, I jumps in increments of num_rep, and so dividing by it will yield 0,1,2,3....
+            #end for
+
+            y[count] = averaged_temp
+            count += 1
+        
         f.close()
-    else:
-        x = array([float(val) for val in input().split()])
-        y = array([float(val) for val in input().split()])
-        a = array([float(val) for val in input().split()])
-    assert x.size == y.size, 'number of values of x and y are mismatched'
-    assert a.size == 1, 'invalid number of values for a'
-
-
-    # adding parameters, initial guesses, and constraints
-    params = Parameters()
-    params.add('kd', value=1, min=0)
-    params.add('emfretmax', value=1, min=0)
-
-
-    # run fitting procedure and display results
-    result = minimize(residuals, params, args=(x, y, a))
-    ci = conf_interval(result, maxiter=1000)
-
-    # print results to file or terminal (depends on -o flag)
-    if(args.output):
-        f = open(args.output, 'w')
-        f.write(json.dumps({param_name: params[param_name].value for param_name in params}) + '\n')
-        f.write(json.dumps(ci) + '\n')
-        f.close()
-    else:
-        for param_name in params:
+    else: #reads from terminal
+        for param_name in params: #prints to stdout. Needs to be modified
             print('{}:\n{}\n'.format(param_name, round(params[param_name].value, 4)))
             p_width = max(len(str(p)) for p in ci[param_name][0])
             getcontext().prec = 4
