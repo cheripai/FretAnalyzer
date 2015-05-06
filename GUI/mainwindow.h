@@ -19,7 +19,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit MainWindow(QWidget *parent = 0);
+    explicit MainWindow(int nRow,int nSet, int nRep, QWidget *parent = 0);
     ~MainWindow();
 
 private slots:
@@ -27,15 +27,24 @@ private slots:
     void on_actionAbout_triggered();
     void on_actionExit_triggered();
     void on_actionNew_triggered();
+    void on_actionCopy_triggered();
+    void on_actionPaste_triggered();
+    void on_actionDelete_triggered();
+    void on_actionExport_triggered();
 
 private:
     Ui::MainWindow *ui;
+    int nRows;
     int nSets;
     int nReplicates;
     QString plotPath;
-    void organizeInputTable(int nSets, int nReplicates);
+    QClipboard *clipboard;
+    void organizeInputTable(int nRows,int nSets, int nReplicates);
     GridStr readGrid();
     QString selectFile();
+    void copy();
+    void paste();
+    void del();
 };
 
 #endif // MAINWINDOW_H

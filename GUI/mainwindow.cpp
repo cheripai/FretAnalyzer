@@ -1,20 +1,32 @@
+#include <QClipboard>
 #include <QDebug>
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QPainter>
+#include <QPrinter>
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "calculate.h"
 
 
-MainWindow::MainWindow(QWidget *parent) :
+MainWindow::MainWindow(int nRow, int nSet, int nRep, QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
     plotPath = "plot.png";
-    nSets = 3;
-    nReplicates = 3;
-    organizeInputTable(nSets, nReplicates);
+    if(nRow < 20)   // ensure at least 20 rows
+    {
+        nRows = 20;
+    }
+    else
+    {
+        nRows = nRow;
+    }
+    nSets = nSet;
+    nReplicates = nRep;
+    clipboard = QApplication::clipboard();
+    organizeInputTable( nRows, nSets, nReplicates);
 }
 
 
@@ -26,10 +38,10 @@ MainWindow::~MainWindow()
 
 
 // Sets up input table format based on number of sets and replicates determined in startup wizard
-void MainWindow::organizeInputTable(int nSets, int nReplicates)
+void MainWindow::organizeInputTable(int nRows, int nSets, int nReplicates)
 {
-    ui->inputTable->setColumnCount(64);
-    ui->inputTable->setRowCount(64);
+    ui->inputTable->setColumnCount(nSets *nReplicates +1);
+    ui->inputTable->setRowCount(nRows);
 
     QTableWidgetItem *gray = new QTableWidgetItem("");
     gray->setBackgroundColor(Qt::gray);
@@ -90,6 +102,81 @@ QString MainWindow::selectFile()
 }
 
 
+void MainWindow::copy()
+{
+    QTableWidget *view = ui->inputTable;
+    QAbstractItemModel *model = view->model();
+    QItemSelectionModel *selection = view->selectionModel();
+    QModelIndexList indexes = selection->selectedIndexes();
+    qSort(indexes);
+
+    QString selected_text;
+    QModelIndex current;
+    QModelIndex previous = indexes.first();
+    indexes.removeFirst();
+
+    foreach(current, indexes)
+    {
+        QVariant data = model->data(previous);
+        QString text = data.toString();
+        selected_text.append(text);
+
+        if(current.row() != previous.row())
+        {
+            selected_text.append('\n');
+        }
+        else
+        {
+            selected_text.append('\t');
+        }
+        previous = current;
+    }
+    selected_text.append(model->data(current).toString());
+    selected_text.append('\n');
+    clipboard->setText(selected_text);
+}
+
+
+void MainWindow::paste()
+{
+    QTableWidget *view = ui->inputTable;
+    QItemSelectionModel *selection = view->selectionModel();
+    QModelIndexList indexes = selection->selectedIndexes();
+
+    QString selected_text = clipboard->text();
+    QStringList cells = selected_text.split(QRegExp(QLatin1String("\\n|\\t")));
+
+    int rows = selected_text.count(QLatin1Char('\n'));
+    int cols = cells.size() / rows;
+
+    int cell = 0;
+    int r = selection->currentIndex().row();
+    int c = selection->currentIndex().column();
+    for(int row = r; row < rows + r; ++row)
+    {
+        for(int col = c; col < cols + c; ++col, ++cell)
+        {
+            QTableWidgetItem *newItem = new QTableWidgetItem(cells[cell]);
+            view->setItem(row, col, newItem);
+        }
+    }
+}
+
+
+void MainWindow::del()
+{
+    QTableWidget *view = ui->inputTable;
+    QItemSelectionModel *selection = view->selectionModel();
+    QModelIndexList indexes = selection->selectedIndexes();
+    QModelIndex current = indexes.first();
+
+    foreach(current, indexes)
+    {
+        view->setItem(current.row(), current.column(), NULL);
+    }
+}
+
+
 void MainWindow::on_calculateBtn_clicked()
 {
     ui->statusBar->showMessage(tr("Calculating..."));
@@ -112,6 +199,11 @@ void MainWindow::on_calculateBtn_clicked()
     // FIXME: Testing function calls
     GridStr grid = readGrid();
     QVector<double> xValues = getXValues(grid);
+    GridDbl yValues = getYValues(grid);
+    if(xValues.length() != yValues.length()-1)
+    {
+        qDebug() << "Error: x and y have different sizes";
+    }
 }
 
 
@@ -141,4 +233,35 @@ void MainWindow::on_actionNew_triggered()
     QImage plot(plotPath);
     ui->inputTable->clearContents();
     ui->plotFrame->setPixmap(QPixmap::fromImage(plot));
+    organizeInputTable(nRows, nSets, nReplicates);
+}
+
+void MainWindow::on_actionCopy_triggered()
+{
+    copy();
+}
+
+void MainWindow::on_actionPaste_triggered()
+{
+    paste();
+}
+
+void MainWindow::on_actionDelete_triggered()
+{
+   del();
+}
+
+void MainWindow::on_actionExport_triggered()
+{
+    QString filename = QFileDialog::getSaveFileName(this, tr("Save File"), "untitled", tr("PDF Document (*.pdf)"));
+    QPrinter printer;
+    printer.setOutputFormat(QPrinter::PdfFormat);
+    printer.setOutputFileName(filename.append(".pdf"));
+
+    ui->resultsFrame->print(&printer);
+
+    QPixmap plot(plotPath);
+    QPainter painter(&printer);
+    painter.drawPixmap(0, 100, 700, 500, plot);
+    painter.end();
 }
