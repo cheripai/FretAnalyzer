@@ -209,6 +209,10 @@ void MainWindow::on_calculateBtn_clicked()
     {
         qDebug() << "Error: x and y have different sizes";
     }
+    if(aValues.length() != nSets)
+    {
+        qDebug() << "Error: size of a and nSets have different values";
+    }
 }
 
 

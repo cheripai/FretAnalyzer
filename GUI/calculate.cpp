@@ -12,10 +12,9 @@ QVector<double> getAValues(GridStr grid, int nSets, int nReplicates)
     aValues.resize(nSets);
 
     int j = leftSpacing;
-    for(int i = 0; i < nSets; ++i)
+    for(int i = 0; i < nSets; ++i, j += nReplicates)
     {
         aValues[i] = grid[aRow][j].toDouble();
-        j += nReplicates;
     }
 
     return aValues;
