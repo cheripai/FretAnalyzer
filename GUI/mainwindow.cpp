@@ -40,7 +40,7 @@ MainWindow::~MainWindow()
 // Sets up input table format based on number of sets and replicates determined in startup wizard
 void MainWindow::organizeInputTable(int nRows, int nSets, int nReplicates)
 {
-    ui->inputTable->setColumnCount(nSets *nReplicates +1);
+    ui->inputTable->setColumnCount(nSets *nReplicates + 1);
     ui->inputTable->setRowCount(nRows);
 
     QTableWidgetItem *gray = new QTableWidgetItem("");
@@ -57,8 +57,12 @@ void MainWindow::organizeInputTable(int nRows, int nSets, int nReplicates)
         QTableWidgetItem *y = new QTableWidgetItem(QString("Y%1").arg(i+1));
         y->setTextAlignment(Qt::AlignCenter);
         y->setBackgroundColor(Qt::gray);
+        QTableWidgetItem *a = new QTableWidgetItem();
+        a->setTextAlignment(Qt::AlignCenter);
         ui->inputTable->setItem(0, i * nReplicates + 1, y);
         ui->inputTable->setSpan(0, i * nReplicates + 1, 1, nReplicates);
+        ui->inputTable->setItem(1, i * nReplicates + 1, a);
+        ui->inputTable->setSpan(1, i * nReplicates + 1, 1, nReplicates);
     }
 }
 
