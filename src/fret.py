@@ -4,14 +4,13 @@ from decimal import *
 import json
 from lmfit import conf_interval, report_ci, fit_report, minimize, Parameters, Parameter
 from matplotlib.pyplot import plot, savefig
-from numpy import array, linspace, sqrt, zeros, reshape
-import sys #for debugging stuffs
+from numpy import array, linspace, sqrt, zeros, reshape, average
+
 
 def emfret(params, x, a):
     kd = params['kd'].value
     emfretmax = params['emfretmax'].value
     return emfretmax * (1 - (2 * kd) / (x - a + kd + sqrt((x - a - kd) ** 2 + 4 * kd * x)))
-    
 
 
 def residuals(params, x, y, a):
@@ -29,7 +28,6 @@ def create_plot(filename, result, x, y, a):
     savefig(filename, bbox_inches='tight', dpi = 400)
 
 
-
 def init_argparse():
     parser = ArgumentParser(description='Runs script on commandline arguments')
     parser.add_argument('-i', '--input', help='Input file', required=False)
@@ -43,58 +41,40 @@ def main():
     # sets up command line argument parser
     args = init_argparse()
 
+
+    # IMPORTANT: The format of the file has been changed. The new
+    #       format is:
+    #           X values
+    #           number of times measurements are repeated
+    #           A values
+    #           Y values (continuing to end of file)
     if(args.input): #has i flag, read from specified file
         f = open(args.input, 'r')
-
-        # IMPORTANT: The format of the file has been changed. The new
-        #       format is:
-        #           X values
-        #           number of times measurements are repeated
-        #           A values
-        #           Y values (continuing to end of file)
-        #
-
         x = array([float(val) for val in f.readline().split()])
         num_rep = int( f.readline() )
         a = array([float(val) for val in f.readline().split()])
-
-        
-        #the remaining lines are all going to be the values for y
-        #y is initialized to an 2d array of zeros, number of rows equal to number of A values
-        #number of colums is equal to the number of measurements made in a single row
-        y = zeros( (len(a), len(x)) ) 
-        count = 0
-        for line in f: #eats the remaining lines of the file
-            temp = ( array([float(val) for val in line.split()]) )
-            if ( len(temp) == 0):
-                break;
-
-            #now at this part, average the values of y
-            #num_rep tells us how many values of y to average at one time, hence the increment by num_rep
-            #averaged temp is an array holding the averaged values. Initialized to an array of 0s
-            averaged_temp = zeros( (len(temp) / num_rep) )
-            for i in range( 0, len(temp) - num_rep, num_rep ): #I is the starting position of values to be averaged
-                avg = 0
-                
-                for j in range( 0, num_rep): #j is the offset from that starting position
-                    avg += temp[i+j]
-                avg = avg / num_rep
-                averaged_temp[ i / num_rep] = avg #remember, I jumps in increments of num_rep, and so dividing by it will yield 0,1,2,3....
-            y[count] = averaged_temp
-            count += 1
-        
+        y = zeros((len(a), len(x))) 
+        for i in range(len(a)):
+            all_y = zeros((num_rep, len(x)))
+            for j in range(num_rep):
+                all_y[j] = array([float(val) for val in f.readline().split()])
+            y[i] = average(all_y, axis=0)
         f.close()
 
     else: #read from cmdline
         x = array([float(val) for val in input().split()])  
-        y = array([float(val) for val in input().split()])  
+        num_rep = int(input())
         a = array([float(val) for val in input().split()])
+        y = zeros((len(a), len(x)))
+        for i in range(len(a)):
+            all_y = zeros((num_rep, len(x)))
+            for j in range(num_rep):
+                all_y[j] = array([float(val) for val in input().split()])
+            y[i] = average(all_y, axis=0)
 
 
 
     #adding parameters, initial guesses, and constraints
-    #from lmfit library
-    #don't touch these for now
     params = Parameters()
     params.add('kd', value=1, min=0)
     params.add('emfretmax', value=1, min=0)
@@ -120,12 +100,10 @@ def main():
                 for _ in ci[param_name]:
                     print('{}%\t{}'.format(_[0]*100, round(_[1], 4)))
                 print('\n')
-        #end else
         
         # plots data and curve on graph and displays if output file is given
         if(args.plot):
             create_plot(args.plot, result, x, y[i], a[i])
-    #end for
     
 if __name__ == "__main__":
     main()
