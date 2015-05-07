@@ -44,14 +44,14 @@ def main():
 
     # IMPORTANT: The format of the file has been changed. The new
     #       format is:
-    #           X values
-    #           number of times measurements are repeated
+    #           X values of size n
+    #           Number of replicates
     #           A values
-    #           Y values (continuing to end of file)
+    #           Y values with n values on each line
     if(args.input): #has i flag, read from specified file
         f = open(args.input, 'r')
         x = array([float(val) for val in f.readline().split()])
-        num_rep = int( f.readline() )
+        num_rep = int(f.readline())
         a = array([float(val) for val in f.readline().split()])
         y = zeros((len(a), len(x))) 
         for i in range(len(a)):
