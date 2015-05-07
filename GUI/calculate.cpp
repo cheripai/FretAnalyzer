@@ -2,15 +2,34 @@
 #include "calculate.h"
 
 
+QVector<double> getAValues(GridStr grid, int nSets, int nReplicates)
+{
+    const int leftSpacing = 1;
+    const int aRow = 1;
+
+    QVector<double> aValues;
+    aValues.resize(nSets);
+
+    int j = leftSpacing;
+    for(int i = 0; i < nSets; ++i)
+    {
+        aValues[i] = grid[aRow][j].toDouble();
+        j += nReplicates;
+    }
+
+    return aValues;
+}
+
+
 // Extracts X values from grid of data after readGrid()
 QVector<double> getXValues(GridStr grid)
 {
-    int topSpacing = 2;     // first two rows are not used for x values
+    const int topSpacing = 2;     // first two rows are not used for x values
 
     QVector<double> xValues;
-    xValues.resize(grid[0].size()-topSpacing);
+    xValues.resize(grid.size()-topSpacing);
 
-    for(int i = topSpacing; i < grid[0].size(); ++i)
+    for(int i = topSpacing; i < grid.size(); ++i)
     {
         xValues[i-topSpacing] = grid[i][0].toDouble();
     }
@@ -22,8 +41,8 @@ QVector<double> getXValues(GridStr grid)
 // Extracts set of Y values from grid of data after readGrid()
 GridDbl getYValues(GridStr grid)
 {
-    int topSpacing = 1;
-    int leftSpacing = 1;
+    const int topSpacing = 2;
+    const int leftSpacing = 1;
 
     GridDbl yValues;
     yValues.resize(grid.size()-topSpacing);
