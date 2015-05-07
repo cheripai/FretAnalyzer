@@ -2,6 +2,7 @@
 #include "calculate.h"
 
 
+// Extracts A values from grid of data after readGrid()
 QVector<double> getAValues(GridStr grid, int nSets, int nReplicates)
 {
     const int leftSpacing = 1;
