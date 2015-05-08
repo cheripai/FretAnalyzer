@@ -4,6 +4,7 @@
 #include <QMessageBox>
 #include <QPainter>
 #include <QPrinter>
+#include "dialog.h"
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "calculate.h"
@@ -15,14 +16,7 @@ MainWindow::MainWindow(int nRow, int nSet, int nRep, QWidget *parent) :
 {
     ui->setupUi(this);
     plotPath = "plot.png";
-    if(nRow < 20)   // ensure at least 20 rows
-    {
-        nRows = 20;
-    }
-    else
-    {
-        nRows = nRow;
-    }
+    nRows = nRow;
     nSets = nSet;
     nReplicates = nRep;
     clipboard = QApplication::clipboard();
@@ -40,6 +34,10 @@ MainWindow::~MainWindow()
 // Sets up input table format based on number of sets and replicates determined in startup wizard
 void MainWindow::organizeInputTable(int nRows, int nSets, int nReplicates)
 {
+    if(nRows < 20)
+    {
+        nRows = 20;
+    }
     ui->inputTable->setColumnCount(nSets *nReplicates + 1);
     ui->inputTable->setRowCount(nRows);
 
@@ -242,6 +240,15 @@ void MainWindow::on_actionNew_triggered()
     QImage plot(plotPath);
     ui->inputTable->clearContents();
     ui->plotFrame->setPixmap(QPixmap::fromImage(plot));
+
+    Dialog dialog;
+    dialog.show();
+    if(dialog.exec() == QDialog::Accepted)
+    {
+        nRows = dialog.rowValueSpinBox->value();
+        nReplicates = dialog.yvalueSpinBox->value();
+        nSets = dialog.numSetsSpinBox->value();
+    }
     organizeInputTable(nRows, nSets, nReplicates);
 }
 
