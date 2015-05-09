@@ -104,4 +104,7 @@ def main():
         # plots data and curve on graph and displays if output file is given
         if(args.plot):
             create_plot(args.plot, result, x, y[i], a[i])
-    
+   
+
+if __name__ == "__main__":
+    main()
