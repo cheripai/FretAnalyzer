@@ -124,17 +124,3 @@ QString gridToString(GridDbl g)
     }
     return result;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
