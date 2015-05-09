@@ -92,7 +92,7 @@ def main():
             f.write(json.dumps(ci) + '\n')
             f.close()
         else:
-            print('Set{}:\n'.format(i+1))
+            print('Set {}:\n'.format(i+1))
             for param_name in params: #prints to stdout. Needs to be modified
                 print('{}:\n{}\n'.format(param_name, round(params[param_name].value, 4)))
                 p_width = max(len(str(p)) for p in ci[param_name][0])
@@ -105,5 +105,3 @@ def main():
         if(args.plot):
             create_plot(args.plot, result, x, y[i], a[i])
     
-if __name__ == "__main__":
-    main()
