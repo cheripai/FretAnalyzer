@@ -61,12 +61,16 @@ GridDbl getYValues(GridStr grid)
 
 
 // Calls external python script to perform nonlinear regression
-QByteArray runFretPy(QString x, QString y, QString a, QString plotPath)
+QByteArray runFretPy(QVector<double> a, QVector<double> x, GridDbl y, int nReplicates, QString plotPath)
 {
     QProcess fretPy;
     QStringList arguments;
     QByteArray result;
     QByteArray error;
+
+    QString aStr = vecToString(a);
+    QString xStr = vecToString(x);
+    QString yStr = gridToString(y);
 
     if(plotPath != "")
     {
@@ -75,9 +79,10 @@ QByteArray runFretPy(QString x, QString y, QString a, QString plotPath)
 
     // Starts python script and writes data to stdin of script
     fretPy.start("./fret.py", arguments);
-    fretPy.write(x.toLatin1().append('\n'));
-    fretPy.write(y.toLatin1().append('\n'));
-    fretPy.write(a.toLatin1().append('\n'));
+    fretPy.write(xStr.toLatin1());
+    fretPy.write(QString::number(nReplicates).toLatin1().append('\n'));
+    fretPy.write(aStr.toLatin1());
+    fretPy.write(yStr.toLatin1());
     fretPy.closeWriteChannel();
     fretPy.waitForFinished();
 
@@ -93,3 +98,43 @@ QByteArray runFretPy(QString x, QString y, QString a, QString plotPath)
 
     return result;
 }
+
+
+QString vecToString(QVector<double> v)
+{
+    QString result;
+    for(int i = 0; i < v.size(); ++i)
+    {
+        result.append(QString::number(v[i])).append(' ');
+    }
+    return result.append('\n');
+}
+
+
+QString gridToString(GridDbl g)
+{
+    QString result;
+    for(int i = 0; i < g[0].size(); ++i)
+    {
+        for(int j = 0; j < g.size(); ++j)
+        {
+            result.append(QString::number(g[j][i])).append(' ');
+        }
+        result.append('\n');
+    }
+    return result;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+

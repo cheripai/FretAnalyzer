@@ -20,7 +20,7 @@ MainWindow::MainWindow(int nRow, int nSet, int nRep, QWidget *parent) :
     nSets = nSet;
     nReplicates = nRep;
     clipboard = QApplication::clipboard();
-    organizeInputTable( nRows, nSets, nReplicates);
+    organizeInputTable(nRows, nSets, nReplicates);
 }
 
 
@@ -34,10 +34,7 @@ MainWindow::~MainWindow()
 // Sets up input table format based on number of sets and replicates determined in startup wizard
 void MainWindow::organizeInputTable(int nRows, int nSets, int nReplicates)
 {
-    if(nRows < 20)
-    {
-        nRows = 20;
-    }
+    nRows = nRows < 20 ? 20 : nRows;
     ui->inputTable->setColumnCount(nSets *nReplicates + 1);
     ui->inputTable->setRowCount(nRows);
 
@@ -184,33 +181,27 @@ void MainWindow::on_calculateBtn_clicked()
     ui->statusBar->showMessage(tr("Calculating..."));
     QFile::remove(plotPath);    // removes old plot (if it exists) prior to new generation
 
-    QString x = "10 9 8 7 6 5 4 3 2 1 0.5 0";
-    // FIXME: Grab values from C++ functions instead of hardcoded
-    QString y = "588971.60 629608.20 601458.60 591147.50 521218.80 509342.30 497718.90 430004.60 440683.00 279258.60 198418.50 -21109.88";
-    QString a = "1";
+    GridStr grid = readGrid();
+    QVector<double> a = getAValues(grid, nSets, nReplicates);
+    QVector<double> x = getXValues(grid);
+    GridDbl y = getYValues(grid);
 
-    // ASSERT that x y and a are of the right length and properly formatted
-    QByteArray result = runFretPy(x, y, a, plotPath);
+    if(x.length() != y.length())
+    {
+        qDebug() << "Error: x and y have different sizes";
+    }
+    if(a.length() != nSets)
+    {
+        qDebug() << "Error: size of a and nSets have different values";
+    }
+
+    QByteArray result = runFretPy(a, x, y, nReplicates, plotPath);
     ui->resultsFrame->setText(result);
 
     // Presents plot on GUI
     QImage plot(plotPath);
     ui->plotFrame->setPixmap(QPixmap::fromImage(plot));
     ui->statusBar->showMessage(tr("Finished."));
-
-    // FIXME: Testing function calls
-    GridStr grid = readGrid();
-    QVector<double> aValues = getAValues(grid, nSets, nReplicates);
-    QVector<double> xValues = getXValues(grid);
-    GridDbl yValues = getYValues(grid);
-    if(xValues.length() != yValues.length())
-    {
-        qDebug() << "Error: x and y have different sizes";
-    }
-    if(aValues.length() != nSets)
-    {
-        qDebug() << "Error: size of a and nSets have different values";
-    }
 }
 
 

@@ -12,7 +12,9 @@ typedef QVector<QVector<double> > GridDbl;
 QVector<double> getAValues(GridStr grid, int nSets, int nReplicates);
 QVector<double> getXValues(GridStr grid);
 GridDbl getYValues(GridStr grid);
-QByteArray runFretPy(QString x, QString y, QString a, QString plotPath);
+QByteArray runFretPy(QVector<double> a, QVector<double> x, GridDbl y, int nReplicates, QString plotPath);
+QString vecToString(QVector<double> v);
+QString gridToString(GridDbl g);
 
 
 #endif // CALCULATE_H
