@@ -92,7 +92,7 @@ def main():
             f.write(json.dumps(ci) + '\n')
             f.close()
         else:
-            print('Y{}:\n'.format(i+1))
+            print('Set{}:\n'.format(i+1))
             for param_name in params: #prints to stdout. Needs to be modified
                 print('{}:\n{}\n'.format(param_name, round(params[param_name].value, 4)))
                 p_width = max(len(str(p)) for p in ci[param_name][0])
