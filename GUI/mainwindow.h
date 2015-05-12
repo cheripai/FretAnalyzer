@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QString>
 #include <QVector>
+#include "calculate.h"
 
 
 typedef QVector<QVector<QString> > GridStr;
@@ -23,6 +24,7 @@ public:
     ~MainWindow();
 
 private slots:
+    void displayResultsFromProcess(int exitCode, QProcess::ExitStatus exitStatus);
     void on_calculateBtn_clicked();
     void on_actionAbout_triggered();
     void on_actionExit_triggered();
@@ -34,6 +36,7 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
+    QProcess *fretPy;
     int nRows;
     int nSets;
     int nReplicates;
@@ -41,6 +44,7 @@ private:
     QClipboard *clipboard;
     void organizeInputTable(int nRows,int nSets, int nReplicates);
     GridStr readGrid();
+    void runFretPy(QVector<double> a, QVector<double> x, GridDbl y, int nReplicates, QString plotPath);
     QString selectFile();
     void copy();
     void paste();

@@ -1,5 +1,6 @@
 #include <QDebug>
 #include "calculate.h"
+#include "mainwindow.h"
 
 
 // Extracts A values from grid of data after readGrid()
@@ -60,46 +61,7 @@ GridDbl getYValues(GridStr grid)
 }
 
 
-// Calls external python script to perform nonlinear regression
-QByteArray runFretPy(QVector<double> a, QVector<double> x, GridDbl y, int nReplicates, QString plotPath)
-{
-    QProcess fretPy;
-    QStringList arguments;
-    QByteArray result;
-    QByteArray error;
-
-    QString aStr = vecToString(a);
-    QString xStr = vecToString(x);
-    QString yStr = gridToString(y);
-
-    if(plotPath != "")
-    {
-        arguments << "-p" << plotPath;
-    }
-
-    // Starts python script and writes data to stdin of script
-    fretPy.start("./fret.py", arguments);
-    fretPy.write(xStr.toLatin1());
-    fretPy.write(QString::number(nReplicates).toLatin1().append('\n'));
-    fretPy.write(aStr.toLatin1());
-    fretPy.write(yStr.toLatin1());
-    fretPy.closeWriteChannel();
-    fretPy.waitForFinished();
-
-    result = fretPy.readAll();
-    error = fretPy.readAllStandardError();
-    fretPy.close();
-
-    if(error != "")
-    {
-        qDebug() << error;
-        result = error;
-    }
-
-    return result;
-}
-
-
+// converts vector<double> to string with each value separated by spaces
 QString vecToString(QVector<double> v)
 {
     QString result;
@@ -111,6 +73,7 @@ QString vecToString(QVector<double> v)
 }
 
 
+// converts GridDbl to string separated by spaces and newlines
 QString gridToString(GridDbl g)
 {
     QString result;

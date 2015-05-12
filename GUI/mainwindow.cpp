@@ -7,7 +7,6 @@
 #include "dialog.h"
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "calculate.h"
 
 
 MainWindow::MainWindow(int nRow, int nSet, int nRep, QWidget *parent) :
@@ -28,6 +27,30 @@ MainWindow::~MainWindow()
 {
     QFile::remove(plotPath);
     delete ui;
+}
+
+
+// Displays results from QProcess fretPy in results tab
+void MainWindow::displayResultsFromProcess(int exitCode, QProcess::ExitStatus exitStatus)
+{
+    QByteArray result = fretPy->readAll();
+    QByteArray error = fretPy->readAllStandardError();
+    fretPy->close();
+
+    if(error != "")
+    {
+        qDebug() << error;
+        result = error;
+    }
+
+    ui->resultsFrame->setText(result);
+
+    // Presents plot on GUI
+    QImage plot(plotPath);
+    ui->plotFrame->setPixmap(QPixmap::fromImage(plot));
+    ui->statusBar->showMessage(tr("Finished."));
+
+    delete fretPy;
 }
 
 
@@ -88,6 +111,33 @@ GridStr MainWindow::readGrid()
     }
 
     return grid;
+}
+
+
+// Calls external python script to perform nonlinear regression
+void MainWindow::runFretPy(QVector<double> a, QVector<double> x, GridDbl y, int nReplicates, QString plotPath)
+{
+    QStringList arguments;
+    QString aStr = vecToString(a);
+    QString xStr = vecToString(x);
+    QString yStr = gridToString(y);
+
+    if(plotPath != "")
+    {
+        arguments << "-p" << plotPath;
+    }
+
+    fretPy = new QProcess(this);
+    connect(fretPy, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(displayResultsFromProcess(int, QProcess::ExitStatus)));
+
+
+    // Starts python script and writes data to stdin of script
+    fretPy->start("./fret.py", arguments);
+    fretPy->write(xStr.toLatin1());
+    fretPy->write(QString::number(nReplicates).toLatin1().append('\n'));
+    fretPy->write(aStr.toLatin1());
+    fretPy->write(yStr.toLatin1());
+    fretPy->closeWriteChannel();
 }
 
 
@@ -195,13 +245,7 @@ void MainWindow::on_calculateBtn_clicked()
         qDebug() << "Error: size of a and nSets have different values";
     }
 
-    QByteArray result = runFretPy(a, x, y, nReplicates, plotPath);
-    ui->resultsFrame->setText(result);
-
-    // Presents plot on GUI
-    QImage plot(plotPath);
-    ui->plotFrame->setPixmap(QPixmap::fromImage(plot));
-    ui->statusBar->showMessage(tr("Finished."));
+    runFretPy(a, x, y, nReplicates, plotPath);
 }
 
 
@@ -219,7 +263,7 @@ void MainWindow::on_actionExit_triggered()
 
 void MainWindow::on_actionAbout_triggered()
 {
-    QMessageBox::information(this, "About","FretAnalyzer Version: 0.1\nBy: Dat Do, Hui Yang, and Patrick Cammall");
+    QMessageBox::information(this, "About","FretAnalyzer Version: 1.0\nBy: Dat Do, Hui Yang, and Patrick Cammall");
 }
 
 
