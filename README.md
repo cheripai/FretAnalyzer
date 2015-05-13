@@ -10,6 +10,10 @@
 7. ~~Create python script to graph multiple sets of data~~ (Patrick)
 8. Export report as PDF using QPrinter **(Dat)**
 9. User guide (to be completed after everything is settled)
+10. Standard deviation **(Patrick)**
+11. Updated text to "How many concentrations of acceptor" <-- for rows
+                    "How many concentrations of donor" <-- for cols **(Hui)**
+12. Import from excel file **(Dat)**
 
 
 
