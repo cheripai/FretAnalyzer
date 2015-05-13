@@ -8,8 +8,8 @@ from numpy import array, linspace, sqrt, zeros, reshape, average
 
 
 def emfret(params, x, a):
-    kd = params['kd'].value
-    emfretmax = params['emfretmax'].value
+    kd = params['Kd'].value
+    emfretmax = params['EmFRETMAX'].value
     return emfretmax * (1 - (2 * kd) / (x - a + kd + sqrt((x - a - kd) ** 2 + 4 * kd * x)))
 
 
@@ -77,8 +77,8 @@ def main():
 
     #adding parameters, initial guesses, and constraints
     params = Parameters()
-    params.add('kd', value=1, min=0)
-    params.add('emfretmax', value=1, min=0)
+    params.add('Kd', value=1, min=0)
+    params.add('EmFRETMAX', value=1, min=0)
 
     #run fitting procedure and display results
     #this needs to be repeated for each A value. Note that A[i] corresponds to Y[i]
