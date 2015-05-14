@@ -45,7 +45,7 @@ private:
     QString plotPath;
     QClipboard *clipboard;
     void importFromCSV(QString fileName);
-    void organizeInputTable(int nRows,int nSets, int nReplicates);
+    void organizeInputTable(int nRows, int nSets, int nReplicates, bool organizeAll);
     GridStr readGrid();
     void runFretPy(QVector<double> a, QVector<double> x, GridDbl y, int nReplicates, QString plotPath);
     QString selectFile();

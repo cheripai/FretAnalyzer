@@ -19,7 +19,7 @@ MainWindow::MainWindow(int nRow, int nSet, int nRep, QWidget *parent) :
     nSets = nSet;
     nReplicates = nRep;
     clipboard = QApplication::clipboard();
-    organizeInputTable(nRows, nSets, nReplicates);
+    organizeInputTable(nRows, nSets, nReplicates, true);
 }
 
 
@@ -54,23 +54,39 @@ void MainWindow::displayResultsFromProcess(int exitCode, QProcess::ExitStatus ex
 }
 
 
-// TODO: Add error checking for sizes of input and user set
 void MainWindow::importFromCSV(QString fileName)
 {
     QFile file(fileName);
+    int rows = 0;
 
-    if (file.open(QIODevice::ReadOnly)) {
+    // This determines how many rows is needed for the inputTable
+    if(file.open(QIODevice::ReadOnly))
+    {
+        QTextStream in(&file);
+        while(!in.atEnd())
+        {
+            QString fileLine = in.readLine();
+            ++rows;
+        }
+        file.close();
+    }
+
+    nRows = rows - 2;
+    ui->inputTable->setRowCount(rows);
+
+    if(file.open(QIODevice::ReadOnly))
+    {
 
         int lineindex = 0;                     // file line counter
         QTextStream in(&file);                 // read to text stream
 
-        while (!in.atEnd()) {
-
+        while (!in.atEnd())
+        {
             // read one line from textstream(separated by "\n")
             QString fileLine = in.readLine();
 
             // parse the read line into separate pieces(tokens) with "," as the delimiter
-            QStringList lineToken = fileLine.split(",", QString::SkipEmptyParts);
+            QStringList lineToken = fileLine.split(",", QString::KeepEmptyParts);
 
             // load parsed data to model accordingly
             for (int j = 0; j < lineToken.size(); j++) {
@@ -78,19 +94,18 @@ void MainWindow::importFromCSV(QString fileName)
                 QTableWidgetItem *item = new QTableWidgetItem(value);
                 ui->inputTable->setItem(lineindex, j, item);
             }
-
-            lineindex++;
+            ++lineindex;
         }
-
         file.close();
     }
 }
 
 
 // Sets up input table format based on number of sets and replicates determined in startup wizard
-void MainWindow::organizeInputTable(int nRows, int nSets, int nReplicates)
+void MainWindow::organizeInputTable(int nRows, int nSets, int nReplicates, bool organizeAll)
 {
-    nRows = nRows < 20 ? 20 : nRows;
+    // We add 2 because the first two rows do not count in the number of rows needed
+    nRows = nRows < 20 ? 20 : nRows + 2;
     ui->inputTable->setColumnCount(nSets *nReplicates + 1);
     ui->inputTable->setRowCount(nRows);
 
@@ -112,8 +127,14 @@ void MainWindow::organizeInputTable(int nRows, int nSets, int nReplicates)
         a->setTextAlignment(Qt::AlignCenter);
         ui->inputTable->setItem(0, i * nReplicates + 1, y);
         ui->inputTable->setSpan(0, i * nReplicates + 1, 1, nReplicates);
-        ui->inputTable->setItem(1, i * nReplicates + 1, a);
-        ui->inputTable->setSpan(1, i * nReplicates + 1, 1, nReplicates);
+
+        // This will wipe all a values, which is why we have a special flag for it
+        // We do not want this function to wipe the a values on importing from csv
+        if(organizeAll)
+        {
+            ui->inputTable->setItem(1, i * nReplicates + 1, a);
+            ui->inputTable->setSpan(1, i * nReplicates + 1, 1, nReplicates);
+        }
     }
 }
 
@@ -317,7 +338,7 @@ void MainWindow::on_actionNew_triggered()
         nReplicates = dialog.yvalueSpinBox->value();
         nSets = dialog.numSetsSpinBox->value();
     }
-    organizeInputTable(nRows, nSets, nReplicates);
+    organizeInputTable(nRows, nSets, nReplicates, true);
 }
 
 void MainWindow::on_actionCopy_triggered()
@@ -354,5 +375,5 @@ void MainWindow::on_actionImport_triggered()
 {
     QString fileName = selectFile();
     importFromCSV(fileName);
-    organizeInputTable(nRows, nSets, nReplicates);
+    organizeInputTable(nRows, nSets, nReplicates, false);
 }
