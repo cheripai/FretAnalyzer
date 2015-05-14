@@ -34,6 +34,8 @@ private slots:
     void on_actionDelete_triggered();
     void on_actionExport_triggered();
 
+    void on_actionImport_triggered();
+
 private:
     Ui::MainWindow *ui;
     QProcess *fretPy;
@@ -42,6 +44,7 @@ private:
     int nReplicates;
     QString plotPath;
     QClipboard *clipboard;
+    void importFromCSV(QString fileName);
     void organizeInputTable(int nRows,int nSets, int nReplicates);
     GridStr readGrid();
     void runFretPy(QVector<double> a, QVector<double> x, GridDbl y, int nReplicates, QString plotPath);

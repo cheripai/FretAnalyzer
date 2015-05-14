@@ -54,6 +54,39 @@ void MainWindow::displayResultsFromProcess(int exitCode, QProcess::ExitStatus ex
 }
 
 
+// TODO: Add error checking for sizes of input and user set
+void MainWindow::importFromCSV(QString fileName)
+{
+    QFile file(fileName);
+
+    if (file.open(QIODevice::ReadOnly)) {
+
+        int lineindex = 0;                     // file line counter
+        QTextStream in(&file);                 // read to text stream
+
+        while (!in.atEnd()) {
+
+            // read one line from textstream(separated by "\n")
+            QString fileLine = in.readLine();
+
+            // parse the read line into separate pieces(tokens) with "," as the delimiter
+            QStringList lineToken = fileLine.split(",", QString::SkipEmptyParts);
+
+            // load parsed data to model accordingly
+            for (int j = 0; j < lineToken.size(); j++) {
+                QString value = lineToken.at(j);
+                QTableWidgetItem *item = new QTableWidgetItem(value);
+                ui->inputTable->setItem(lineindex, j, item);
+            }
+
+            lineindex++;
+        }
+
+        file.close();
+    }
+}
+
+
 // Sets up input table format based on number of sets and replicates determined in startup wizard
 void MainWindow::organizeInputTable(int nRows, int nSets, int nReplicates)
 {
@@ -145,7 +178,7 @@ void MainWindow::runFretPy(QVector<double> a, QVector<double> x, GridDbl y, int 
 QString MainWindow::selectFile()
 {
     QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"), "",
-        tr("Text Files (*.txt)"));
+        tr("CSV Files (*.csv)"));
 
     return fileName;
 }
@@ -315,4 +348,11 @@ void MainWindow::on_actionExport_triggered()
     QPainter painter(&printer);
     painter.drawPixmap(0, 100, 700, 500, plot);
     painter.end();
+}
+
+void MainWindow::on_actionImport_triggered()
+{
+    QString fileName = selectFile();
+    importFromCSV(fileName);
+    organizeInputTable(nRows, nSets, nReplicates);
 }
