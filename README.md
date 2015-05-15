@@ -13,15 +13,4 @@
 10. Standard deviation **(Patrick)**
 11. Updated text to "How many concentrations of acceptor" <-- for rows
                     "How many concentrations of donor" <-- for cols **(Hui)**
-12. Import from excel file **(Dat)**
-
-
-
-
-
-
------------------------------
-
-How many replicate values?
-
-How many sets of concentrations of donor?
+12. ~~Import from csv~~ **(Dat)**
