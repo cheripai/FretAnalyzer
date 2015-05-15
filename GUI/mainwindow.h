@@ -33,7 +33,7 @@ private slots:
     void on_actionPaste_triggered();
     void on_actionDelete_triggered();
     void on_actionExport_triggered();
-
+    void on_actionExport_Data_triggered();
     void on_actionImport_triggered();
 
 private:

@@ -317,7 +317,7 @@ void MainWindow::on_actionExit_triggered()
 
 void MainWindow::on_actionAbout_triggered()
 {
-    QMessageBox::information(this, "About","FretAnalyzer Version: 1.0\nBy: Dat Do, Hui Yang, and Patrick Cammall");
+    QMessageBox::information(this, "About","FretAnalyzer Version: 1.1\nBy: Dat Do, Hui Yang, and Patrick Cammall");
 }
 
 
@@ -343,33 +343,71 @@ void MainWindow::on_actionNew_triggered()
 
 void MainWindow::on_actionCopy_triggered()
 {
-    copy();
+    if(ui->inputTable->selectedRanges().size() != 0)
+    {
+        copy();
+    }
+    else
+    {
+        QMessageBox errorBox;
+        errorBox.critical(this, "Error", "Error: no cells in table selected");
+    }
 }
 
 void MainWindow::on_actionPaste_triggered()
 {
-    paste();
+    if(ui->inputTable->selectedRanges().size() != 0)
+    {
+        paste();
+    }
+    else
+    {
+        QMessageBox errorBox;
+        errorBox.critical(this, "Error", "Error: no cells in table selected");
+    }
 }
 
 void MainWindow::on_actionDelete_triggered()
 {
-   del();
+    if(ui->inputTable->selectedRanges().size() != 0)
+    {
+       del();
+    }
+    else
+    {
+        QMessageBox errorBox;
+        errorBox.critical(this, "Error", "Error: no cells in table selected");
+    }
 }
 
 void MainWindow::on_actionExport_triggered()
 {
-    QString filename = QFileDialog::getSaveFileName(this, tr("Save File"), "untitled", tr("PDF Document (*.pdf)"));
-    QPrinter printer;
-    printer.setOutputFormat(QPrinter::PdfFormat);
-    printer.setOutputFileName(filename.append(".pdf"));
-
-    ui->resultsFrame->print(&printer);
-
-    QPixmap plot(plotPath);
-    QPainter painter(&printer);
-    painter.drawPixmap(0, 100, 700, 500, plot);
-    painter.end();
+    QString filename = QFileDialog::getSaveFileName(this, tr("Save File"), "untitled", tr("PNG image (*.png)"));
+    QFileInfo checkFile(plotPath);
+    if(checkFile.exists() && checkFile.isFile())
+    {
+        QFile::copy(plotPath, filename.append(".png"));
+    }
+    else
+    {
+        QMessageBox errorBox;
+        errorBox.critical(this, "Error", "Error: plot does not exist");
+    }
 }
+
+
+void MainWindow::on_actionExport_Data_triggered()
+{
+    QString filename = QFileDialog::getSaveFileName(this, tr("Save File"), "untitled", tr("Text file (*.txt)")).append(".txt");
+    QFile file(filename);
+    if(file.open(QIODevice::ReadWrite))
+    {
+        QTextStream stream(&file);
+        stream << ui->resultsFrame->toPlainText();
+    }
+    file.close();
+}
+
 
 void MainWindow::on_actionImport_triggered()
 {
