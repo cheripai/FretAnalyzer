@@ -8,7 +8,7 @@
 5. ~~Implement copy, paste, and delete functions on inputGrid~~ **(Dat)**
 6. ~~Modify fret.py to average n replicate values and display std dev~~ (Patrick)
 7. ~~Create python script to graph multiple sets of data~~ (Patrick)
-8. Export report as PDF using QPrinter **(Dat)**
+8. ~~Export plot and data~~ **(Dat)**
 9. User guide (to be completed after everything is settled)
 10. Standard deviation **(Patrick)**
 11. Updated text to "How many concentrations of acceptor" <-- for rows
