@@ -4,11 +4,13 @@ from decimal import *
 import json
 from lmfit import conf_interval, report_ci, fit_report, minimize, Parameters, Parameter
 from matplotlib.pyplot import plot, savefig, text
-from numpy import array, linspace, sqrt, zeros, reshape, average
+from numpy import array, linspace, sqrt, zeros, reshape, average, std
 
+kdlist = []
 
 def emfret(params, x, a):
     kd = params['Kd'].value
+    kdlist.append(kd)
     emfretmax = params['EmFRETMAX'].value
     return emfretmax * (1 - (2 * kd) / (x - a + kd + sqrt((x - a - kd) ** 2 + 4 * kd * x)))
 
@@ -17,16 +19,21 @@ def residuals(params, x, y, a):
     return y - emfret(params, x, a)
 
 
-def create_plot(filename, result, x, y, a, i):
+def create_plot(filename, result, x, y, a, stddev, i):
     xx = linspace(x.min(), x.max(), 50)         #so this returns 50 evenly spaced values between the start and stop points
     yy = emfret(result.params, xx, a)           #it uses each of these to calculate emfretmax (one per xx value)
     z = linspace(x.min(), x.max(), 50);
     #this plots all the values contained in Y
-    plot(x, y, 'bo')
+    points = [ 'b.', 'r.', 'y.']
+    other = ['b_', 'r_', 'y_'] #will plot colored horizontal lines for std dev
+    plot(x, y, points[i % 3])
+    #plot the std dev ( point +/- std dev)
+    plot(x, y-stddev, other[i % 3])
+    plot(x, y+stddev, other[i % 3] )
     #this plots the calcualted EMfret (xx,yy), and a black horizontal line through the origin (xx, z) for orientation of the axis
     plot(xx, yy, 'g-')
     plot(xx, z, 'k-')
-    text(xx[-1], yy[-1], '{}'.format(i+1), ha='left', position=(xx[-1]+0.05, yy[-1]))
+    text(xx[-1], yy[-1], '{}'.format(i+1), ha='left', position=(xx[-1]+0.05, yy[-1])) #this adds labels
     savefig(filename, bbox_inches='tight', dpi=400)
 
 
@@ -55,12 +62,14 @@ def main():
         x = array([float(val) for val in f.readline().split()])
         num_rep = int(f.readline())
         a = array([float(val) for val in f.readline().split()])
-        y = zeros((len(a), len(x))) 
+        y = zeros((len(a), len(x)))
+        stddev = zeros( (len(a), len(x)) )
         for i in range(len(a)):
             all_y = zeros((num_rep, len(x)))
             for j in range(num_rep):
                 all_y[j] = array([float(val) for val in f.readline().split()])
             y[i] = average(all_y, axis=0)
+            stddev[i] = std(y, axis=0)
         f.close()
 
     else: #read from cmdline
@@ -79,15 +88,15 @@ def main():
     params = Parameters()
     params.add('Kd', value=1, min=0)
     params.add('EmFRETMAX', value=1, min=0)
-
+    
     #run fitting procedure and display results
     #this needs to be repeated for each A value. Note that A[i] corresponds to Y[i]
     #X is assumed to hold constant across all of these, so it remains unchanged across iterations
     for i in range(len(a)):
         result = minimize(residuals, params, args=(x, y[i], a[i] ))
         ci = conf_interval(result, maxiter=1000)
-
         # print results to file or terminal (depends on -o flag)
+
         if(args.output):
             f = open(args.output, 'w')
             f.write(json.dumps({param_name: params[param_name].value for param_name in params}) + '\n')
@@ -102,10 +111,15 @@ def main():
                 for _ in ci[param_name]:
                     print('{}%\t{}'.format(_[0]*100, round(_[1], 4)))
                 print('\n')
+
+        print "stddev: ", stddev[i]
+        print "KDstddev: ", std(kdlist)
+        print '\n'
         
         # plots data and curve on graph and displays if output file is given
         if(args.plot):
-            create_plot(args.plot, result, x, y[i], a[i], i)
+            create_plot(args.plot, result, x, y[i], a[i], stddev[i], i)
+    #end for
     
 if __name__ == "__main__":
     main()
