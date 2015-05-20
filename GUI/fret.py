@@ -29,7 +29,7 @@ def create_plot(filename, result, x, y, a, stddev, i):
     plot(x, y-stddev, other[i % 3])
     plot(x, y+stddev, other[i % 3] )
     #this plots the calcualted EMfret (xx,yy), and a black horizontal line through the origin (xx, z) for orientation of the axis
-    plot(xx, yy, 'g-')
+    plot(xx, yy, 'g--')
     plot(xx, z, 'k-')
     text(xx[-1], yy[-1], '{}'.format(i+1), ha='left', position=(xx[-1]+0.05, yy[-1])) #this adds labels
     savefig(filename, bbox_inches='tight', dpi=400)
