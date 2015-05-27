@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python2
 from argparse import ArgumentParser
 from decimal import *
 import json
@@ -6,11 +6,9 @@ from lmfit import conf_interval, report_ci, fit_report, minimize, Parameters, Pa
 from matplotlib.pyplot import plot, savefig, text
 from numpy import array, linspace, sqrt, zeros, reshape, average, std
 
-kdlist = []
 
 def emfret(params, x, a):
     kd = params['Kd'].value
-    kdlist.append(kd)
     emfretmax = params['EmFRETMAX'].value
     return emfretmax * (1 - (2 * kd) / (x - a + kd + sqrt((x - a - kd) ** 2 + 4 * kd * x)))
 
@@ -31,7 +29,7 @@ def create_plot(filename, result, x, y, a, stddev, i):
     plot(x, y-stddev, other[i % 3])
     plot(x, y+stddev, other[i % 3] )
     #this plots the calcualted EMfret (xx,yy), and a black horizontal line through the origin (xx, z) for orientation of the axis
-    plot(xx, yy, 'g-')
+    plot(xx, yy, 'g--')
     plot(xx, z, 'k-')
     text(xx[-1], yy[-1], '{}'.format(i+1), ha='left', position=(xx[-1]+0.05, yy[-1])) #this adds labels
     savefig(filename, bbox_inches='tight', dpi=400)
@@ -69,19 +67,21 @@ def main():
             for j in range(num_rep):
                 all_y[j] = array([float(val) for val in f.readline().split()])
             y[i] = average(all_y, axis=0)
-            stddev[i] = std(y, axis=0)
+            stddev[i] = std(all_y, axis=0)
         f.close()
 
     else: #read from cmdline
-        x = array([float(val) for val in input().split()])  
-        num_rep = int(input())
-        a = array([float(val) for val in input().split()])
+        x = array([float(val) for val in raw_input().split()])  
+        num_rep = int(raw_input())
+        a = array([float(val) for val in raw_input().split()])
         y = zeros((len(a), len(x)))
+        stddev = zeros((len(a), len(x)))
         for i in range(len(a)):
             all_y = zeros((num_rep, len(x)))
             for j in range(num_rep):
-                all_y[j] = array([float(val) for val in input().split()])
+                all_y[j] = array([float(val) for val in raw_input().split()])
             y[i] = average(all_y, axis=0)
+            stddev[i] = std(all_y, axis=0)
 
 
     #adding parameters, initial guesses, and constraints
@@ -111,10 +111,10 @@ def main():
                 for _ in ci[param_name]:
                     print('{}%\t{}'.format(_[0]*100, round(_[1], 4)))
                 print('\n')
-
-        print "stddev: ", stddev[i]
-        print "KDstddev: ", std(kdlist)
-        print '\n'
+            print('EmFRETMAX stddev:')
+            for s in stddev[i]:
+                print(s)
+            print('\n')
         
         # plots data and curve on graph and displays if output file is given
         if(args.plot):
