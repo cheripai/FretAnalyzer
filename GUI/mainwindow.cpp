@@ -176,7 +176,7 @@ void MainWindow::runFretPy(QVector<double> a, QVector<double> x, GridDbl y, int 
     QString xStr = vecToString(x);
     QString yStr = gridToString(y);
 
-    if(plotPath != "")
+    if(plotPath != "" && ui->graphCheckBox->isChecked())
     {
         arguments << "-p" << plotPath;
     }
