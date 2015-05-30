@@ -19,6 +19,7 @@ MainWindow::MainWindow(int nRow, int nSet, int nRep, QWidget *parent) :
     nSets = nSet;
     nReplicates = nRep;
     clipboard = QApplication::clipboard();
+    topSpacing = 2;
     organizeInputTable(nRows, nSets, nReplicates, true);
 }
 
@@ -54,6 +55,35 @@ void MainWindow::displayResultsFromProcess(int exitCode, QProcess::ExitStatus ex
 }
 
 
+bool MainWindow::hasEmptyCells()
+{
+    int j = 1;
+    for(int i = 0; i < nSets; ++i, j += nReplicates)
+    {
+        if(ui->inputTable->item(topSpacing-1, j) == NULL)
+        {
+            QMessageBox errorBox;
+            errorBox.critical(this, "Error", QString("Error: empty cell at (%1, %2)").arg(topSpacing).arg(j+1));
+            return true;
+        }
+
+    }
+    for(int i = topSpacing; i < ui->inputTable->rowCount(); ++i)
+    {
+        for(int j = 0; j < ui->inputTable->columnCount(); ++j)
+        {
+            if(ui->inputTable->item(i, j) == NULL)
+            {
+                QMessageBox errorBox;
+                errorBox.critical(this, "Error", QString("Error: empty cell at (%1, %2)").arg(i+1).arg(j+1));
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+
 void MainWindow::importFromCSV(QString fileName)
 {
     QFile file(fileName);
@@ -71,7 +101,7 @@ void MainWindow::importFromCSV(QString fileName)
         file.close();
     }
 
-    nRows = rows - 2;
+    nRows = rows - topSpacing;
     ui->inputTable->setRowCount(rows);
 
     if(file.open(QIODevice::ReadOnly))
@@ -104,8 +134,7 @@ void MainWindow::importFromCSV(QString fileName)
 // Sets up input table format based on number of sets and replicates determined in startup wizard
 void MainWindow::organizeInputTable(int nRows, int nSets, int nReplicates, bool organizeAll)
 {
-    // We add 2 because the first two rows do not count in the number of rows needed
-    nRows = nRows < 3 ? 3 : nRows + 2;
+    nRows = nRows < topSpacing + 1 ? topSpacing + 1 : nRows + topSpacing;
     ui->inputTable->setColumnCount(nSets *nReplicates + 1);
     ui->inputTable->setRowCount(nRows);
 
@@ -282,6 +311,11 @@ void MainWindow::del()
 
 void MainWindow::on_calculateBtn_clicked()
 {
+    if(hasEmptyCells())
+    {
+        return;
+    }
+
     ui->statusBar->showMessage(tr("Calculating..."));
     QFile::remove(plotPath);    // removes old plot (if it exists) prior to new generation
 

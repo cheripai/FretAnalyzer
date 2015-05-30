@@ -42,8 +42,10 @@ private:
     int nRows;
     int nSets;
     int nReplicates;
+    int topSpacing;
     QString plotPath;
     QClipboard *clipboard;
+    bool hasEmptyCells();
     void importFromCSV(QString fileName);
     void organizeInputTable(int nRows, int nSets, int nReplicates, bool organizeAll);
     GridStr readGrid();
