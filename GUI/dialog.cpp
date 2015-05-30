@@ -33,8 +33,8 @@ void Dialog::createFormGroupBox()
     formGroupBox = new QGroupBox(tr("Table setting"));
     QFormLayout *layout = new QFormLayout;
 
-    layout->addRow(new QLabel(tr("Enter x rows:")), rowValueSpinBox);
-    layout->addRow(new QLabel(tr("Enter y sets:")), numSetsSpinBox);
-    layout->addRow(new QLabel(tr("Enter y replicates:")), yvalueSpinBox);
+    layout->addRow(new QLabel(tr("How many concentrations of acceptor:")), rowValueSpinBox);
+    layout->addRow(new QLabel(tr("How many concentrations of donor:")), numSetsSpinBox);
+    layout->addRow(new QLabel(tr("Enter donor replicates:")), yvalueSpinBox);
     formGroupBox->setLayout(layout);
 }

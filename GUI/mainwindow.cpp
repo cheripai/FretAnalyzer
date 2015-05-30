@@ -105,7 +105,7 @@ void MainWindow::importFromCSV(QString fileName)
 void MainWindow::organizeInputTable(int nRows, int nSets, int nReplicates, bool organizeAll)
 {
     // We add 2 because the first two rows do not count in the number of rows needed
-    nRows = nRows < 20 ? 20 : nRows + 2;
+    nRows = nRows < 3 ? 3 : nRows + 2;
     ui->inputTable->setColumnCount(nSets *nReplicates + 1);
     ui->inputTable->setRowCount(nRows);
 
