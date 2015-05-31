@@ -1,7 +1,6 @@
 #!/usr/bin/python2
 from argparse import ArgumentParser
 from decimal import *
-import json
 from lmfit import conf_interval, report_ci, fit_report, minimize, Parameters, Parameter
 from matplotlib.pyplot import plot, savefig, text
 from numpy import array, linspace, sqrt, zeros, reshape, average, std
@@ -38,7 +37,6 @@ def create_plot(filename, result, x, y, a, stddev, i):
 def init_argparse():
     parser = ArgumentParser(description='Runs script on commandline arguments')
     parser.add_argument('-i', '--input', help='Input file', required=False)
-    parser.add_argument('-o', '--output', help='Output results to file', required=False)
     parser.add_argument('-p', '--plot', help='Output file for plot', required=False)
     return parser.parse_args()
     
@@ -95,31 +93,24 @@ def main():
     for i in range(len(a)):
         result = minimize(residuals, params, args=(x, y[i], a[i] ))
         ci = conf_interval(result, maxiter=1000)
-        # print results to file or terminal (depends on -o flag)
 
-        if(args.output):
-            f = open(args.output, 'w')
-            f.write(json.dumps({param_name: params[param_name].value for param_name in params}) + '\n')
-            f.write(json.dumps(ci) + '\n')
-            f.close()
-        else:
-            print('Y{}:\n'.format(i+1))
-            for param_name in params: 
-                print('{}:\n{}\n'.format(param_name, round(params[param_name].value, 4)))
-                p_width = max(len(str(p)) for p in ci[param_name][0])
-                getcontext().prec = 4
-                for _ in ci[param_name]:
-                    print('{}%\t{}'.format(_[0]*100, round(_[1], 4)))
-                print('\n')
-            print('EmFRETMAX stddev:')
-            for s in stddev[i]:
-                print(s)
+        # Print results
+        print('Y{}:\n'.format(i+1))
+        for param_name in params: 
+            print('{}:\n{}\n'.format(param_name, round(params[param_name].value, 4)))
+            p_width = max(len(str(p)) for p in ci[param_name][0])
+            getcontext().prec = 4
+            for _ in ci[param_name]:
+                print('{}%\t{}'.format(_[0]*100, round(_[1], 4)))
             print('\n')
+        print('EmFRETMAX stddev:')
+        for s in stddev[i]:
+            print(s)
+        print('\n')
         
         # plots data and curve on graph and displays if output file is given
         if(args.plot):
             create_plot(args.plot, result, x, y[i], a[i], stddev[i], i)
-    #end for
     
 if __name__ == "__main__":
     main()
