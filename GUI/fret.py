@@ -32,7 +32,7 @@ def create_plot(filename, result, x, y, a, stddev, i):
     plot(xx, yy, 'g--')
     plot(xx, z, 'k-')
     text(xx[-1], yy[-1], '{}'.format(i+1), ha='left', position=(xx[-1]+0.05, yy[-1])) #this adds labels
-    savefig(filename, bbox_inches='tight', dpi=400)
+    savefig(filename, bbox_inches='tight', dpi=200)
 
 
 def init_argparse():
@@ -71,7 +71,7 @@ def main():
         f.close()
 
     else: #read from cmdline
-        x = array([float(val) for val in raw_input().split()])  
+        x = array([float(val) for val in raw_input().split()])
         num_rep = int(raw_input())
         a = array([float(val) for val in raw_input().split()])
         y = zeros((len(a), len(x)))
