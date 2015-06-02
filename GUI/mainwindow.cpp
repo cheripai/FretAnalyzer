@@ -19,7 +19,7 @@ MainWindow::MainWindow(int nRow, int nSet, int nRep, QWidget *parent) :
     nSets = nSet;
     nReplicates = nRep;
     clipboard = QApplication::clipboard();
-    topSpacing = 2;
+    topSpacing = 3;
     organizeInputTable(nRows, nSets, nReplicates, true);
 }
 
@@ -135,17 +135,23 @@ void MainWindow::importFromCSV(QString fileName)
 void MainWindow::organizeInputTable(int nRows, int nSets, int nReplicates, bool organizeAll)
 {
     nRows = nRows < topSpacing + 1 ? topSpacing + 1 : nRows + topSpacing;
-    ui->inputTable->setColumnCount(nSets *nReplicates + 1);
+    ui->inputTable->setColumnCount(nSets*nReplicates+1);
     ui->inputTable->setRowCount(nRows);
 
     QTableWidgetItem *gray = new QTableWidgetItem("");
     gray->setBackgroundColor(Qt::gray);
-    ui->inputTable->setItem(0, 0, gray);
+    ui->inputTable->setItem(1, 0, gray);
+
+    QTableWidgetItem *topLabel = new QTableWidgetItem("Acceptor Concentration");
+    topLabel->setTextAlignment(Qt::AlignCenter);
+    topLabel->setBackgroundColor(Qt::gray);
+    ui->inputTable->setItem(0, 0, topLabel);
+    ui->inputTable->setSpan(0, 0, 1, ui->inputTable->columnCount());
 
     QTableWidgetItem *x = new QTableWidgetItem("X");
     x->setTextAlignment(Qt::AlignCenter);
     x->setBackgroundColor(Qt::gray);
-    ui->inputTable->setItem(1, 0, x);
+    ui->inputTable->setItem(2, 0, x);
 
     for(int i = 0; i < nSets; ++i)
     {
@@ -154,15 +160,15 @@ void MainWindow::organizeInputTable(int nRows, int nSets, int nReplicates, bool 
         y->setBackgroundColor(Qt::gray);
         QTableWidgetItem *a = new QTableWidgetItem();
         a->setTextAlignment(Qt::AlignCenter);
-        ui->inputTable->setItem(0, i * nReplicates + 1, y);
-        ui->inputTable->setSpan(0, i * nReplicates + 1, 1, nReplicates);
+        ui->inputTable->setItem(1, i * nReplicates + 1, y);
+        ui->inputTable->setSpan(1, i * nReplicates + 1, 1, nReplicates);
 
         // This will wipe all a values, which is why we have a special flag for it
         // We do not want this function to wipe the a values on importing from csv
         if(organizeAll)
         {
-            ui->inputTable->setItem(1, i * nReplicates + 1, a);
-            ui->inputTable->setSpan(1, i * nReplicates + 1, 1, nReplicates);
+            ui->inputTable->setItem(2, i * nReplicates + 1, a);
+            ui->inputTable->setSpan(2, i * nReplicates + 1, 1, nReplicates);
         }
     }
 }

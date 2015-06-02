@@ -7,7 +7,7 @@
 QVector<double> getAValues(GridStr grid, int nSets, int nReplicates)
 {
     const int leftSpacing = 1;
-    const int aRow = 1;
+    const int aRow = 2;
 
     QVector<double> aValues;
     aValues.resize(nSets);
@@ -25,7 +25,7 @@ QVector<double> getAValues(GridStr grid, int nSets, int nReplicates)
 // Extracts X values from grid of data after readGrid()
 QVector<double> getXValues(GridStr grid)
 {
-    const int topSpacing = 2;     // first two rows are not used for x values
+    const int topSpacing = 3;     // first two rows are not used for x values
 
     QVector<double> xValues;
     xValues.resize(grid.size()-topSpacing);
@@ -42,7 +42,7 @@ QVector<double> getXValues(GridStr grid)
 // Extracts set of Y values from grid of data after readGrid()
 GridDbl getYValues(GridStr grid)
 {
-    const int topSpacing = 2;
+    const int topSpacing = 3;
     const int leftSpacing = 1;
 
     GridDbl yValues;
