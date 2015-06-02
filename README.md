@@ -7,7 +7,7 @@
 1. ~~Option to generate graph~~
 1. ~~Error for incorrect columns~~
 1. ~~Insert Row above Y values "Acceptor Concentration"~~
-1. Opening window to select which calculations to perform "Protein interaction dissociation constant" (drop down to select)
+1. ~~Opening window to select which calculations to perform "Protein interaction dissociation constant" (drop down to select)~~
 
 
 
