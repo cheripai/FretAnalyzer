@@ -15,11 +15,13 @@ TEMPLATE = app
 SOURCES += main.cpp \
            mainwindow.cpp \
            calculate.cpp \
-           dialog.cpp
+           dialog.cpp \
+    select.cpp
 
 HEADERS  += mainwindow.h \
             calculate.h \
-            dialog.h
+            dialog.h \
+    select.h
 
 FORMS    += mainwindow.ui
 
