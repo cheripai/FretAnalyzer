@@ -21,8 +21,8 @@ void Select::createFormGroupBox()
 {
     selectBox = new QComboBox(this); // drop down menu, index wiht 0, 1, 2..
     selectBox->addItem(tr("Protein interaction dissociation constant"));
-    selectBox->addItem(tr("others"));
-    selectBox->addItem(tr("another one"));
+
+
 
     formGroupBox = new QGroupBox(tr("Welcome"));
     QFormLayout *layout = new QFormLayout;
