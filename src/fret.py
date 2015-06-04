@@ -2,7 +2,7 @@
 from argparse import ArgumentParser
 from decimal import *
 from lmfit import conf_interval, report_ci, fit_report, minimize, Parameters, Parameter
-from matplotlib.pyplot import plot, savefig, text, ticklabel_format
+from matplotlib.pyplot import plot, savefig, text, ticklabel_format, xlabel, ylabel
 from numpy import array, linspace, sqrt, zeros, reshape, average, std
 
 
@@ -38,12 +38,18 @@ def create_plot(filename, result, x, y, a, stddev, i):
     #the border is the same color as the interior of the marker, so it appears only the dashes got thicker
     plot(x, y-stddev, stddev_points[i % num_colors], markersize=7, markeredgewidth=3)
     plot(x, y+stddev, stddev_points[i % num_colors], markersize=7, markeredgewidth=3)
-
+    plot([x,x], [y-stddev, y+stddev], line_style[i%num_colors], linewidth=1) #this plots a vertical line between stddev values
+    
     #this plots the calcualted EMfret (xx,yy), and a black horizontal line through the origin (xx, z) for orientation of the axis
     plot(xx, yy, line_style[i % num_colors], linewidth=3)
     plot(xx, z, 'k-')
 
     ticklabel_format(axis='y', style='sci', scilimits=(0,0) ) #this forces labels on the y axis into scientific format
+
+    #appropriately labels the x and y axis, fontsize is arbitary
+    ylabel("EM$_{fret}$ (RFU)", fontsize=14) #removed fontweight='bold'
+    xlabel('Concentration of Acceptor') #pull label from users's input (ie uMoles, mMoles, picoMoles
+    
     
     text(xx[-1], yy[-1], '{}'.format(i+1), ha='left', position=(xx[-1]+0.05, yy[-1])) #this numbers the lines
     savefig(filename, bbox_inches='tight', dpi=200)
