@@ -4,17 +4,6 @@
 
 #include <QDialog>
 #include <QtWidgets>
-QT_BEGIN_NAMESPACE
-class QAction;
-class QDialogButtonBox;
-class QGroupBox;
-class QLabel;
-class QLineEdit;
-class QMenu;
-class QMenuBar;
-class QPushButton;
-class QTextEdit;
-QT_END_NAMESPACE
 
 class Dialog : public QDialog
 {
@@ -25,12 +14,13 @@ public:
     QSpinBox *rowValueSpinBox;
     QSpinBox *yvalueSpinBox;
     QSpinBox *numSetsSpinBox;
+    QComboBox *unitBox;
 private:
     void createFormGroupBox();
     QGroupBox *formGroupBox;
     QDialogButtonBox *buttonBox;
     QAction *exitAction;
-};
 
+};
 
 #endif // DIALOG_H

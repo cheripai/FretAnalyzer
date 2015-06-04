@@ -138,20 +138,25 @@ void MainWindow::organizeInputTable(int nRows, int nSets, int nReplicates, bool 
     ui->inputTable->setColumnCount(nSets*nReplicates+1);
     ui->inputTable->setRowCount(nRows);
 
+    QFont font;
+    font.setBold(true);
+
     QTableWidgetItem *gray = new QTableWidgetItem("");
     gray->setBackgroundColor(Qt::gray);
     ui->inputTable->setItem(1, 0, gray);
 
-    QTableWidgetItem *topLabel = new QTableWidgetItem("Acceptor Concentration");
+    QTableWidgetItem *topLabel = new QTableWidgetItem("Donor Concentrations (Y)");
     topLabel->setTextAlignment(Qt::AlignCenter);
     topLabel->setBackgroundColor(Qt::gray);
     ui->inputTable->setItem(0, 0, topLabel);
+    ui->inputTable->item(0, 0)->setFont(font);
     ui->inputTable->setSpan(0, 0, 1, ui->inputTable->columnCount());
 
-    QTableWidgetItem *x = new QTableWidgetItem("X");
+    QTableWidgetItem *x = new QTableWidgetItem("Acceptor Concentrations (X)");
     x->setTextAlignment(Qt::AlignCenter);
     x->setBackgroundColor(Qt::gray);
     ui->inputTable->setItem(2, 0, x);
+    ui->inputTable->item(2, 0)->setFont(font);
 
     for(int i = 0; i < nSets; ++i)
     {
@@ -210,6 +215,7 @@ void MainWindow::runFretPy(QVector<double> a, QVector<double> x, GridDbl y, int 
     QString aStr = vecToString(a);
     QString xStr = vecToString(x);
     QString yStr = gridToString(y);
+    arguments << "fret.py";
 
     if(plotPath != "" && ui->graphCheckBox->isChecked())
     {
@@ -221,7 +227,7 @@ void MainWindow::runFretPy(QVector<double> a, QVector<double> x, GridDbl y, int 
 
 
     // Starts python script and writes data to stdin of script
-    fretPy->start("./fret.py", arguments);
+    fretPy->start("python", arguments);
     fretPy->write(xStr.toLatin1());
     fretPy->write(QString::number(nReplicates).toLatin1().append('\n'));
     fretPy->write(aStr.toLatin1());
