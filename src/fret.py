@@ -48,7 +48,7 @@ def create_plot(filename, result, x, y, a, stddev, i):
 
     #appropriately labels the x and y axis, fontsize is arbitary
     ylabel("EM$_{fret}$ (RFU)", fontsize=14) #removed fontweight='bold'
-    xlabel('Concentration of Acceptor') #pull label from users's input (ie uMoles, mMoles, picoMoles
+    xlabel('Concentration of Acceptor') #pull label from users's input (ie uMoles, mMoles, picoMoles)
     
     
     text(xx[-1], yy[-1], '{}'.format(i+1), ha='left', position=(xx[-1]+0.05, yy[-1])) #this numbers the lines
