@@ -116,9 +116,9 @@ def main():
         ci = conf_interval(result, maxiter=1000)
 
         # Print results
-        print('Y{}:\n'.format(i+1))
+        print('Concentration: {}\n'.format(a[i]))
         for param_name in params: 
-            print('{}:\n{}\n'.format(param_name, round(params[param_name].value, 4)))
+            print('{}:\n{} ± {}\n'.format(param_name, round(params[param_name].value, 4), round(params[param_name].stderr, 4)))
             p_width = max(len(str(p)) for p in ci[param_name][0])
             getcontext().prec = 4
             for _ in ci[param_name]:
@@ -126,7 +126,7 @@ def main():
             print('\n')
         print('EmFRETMAX stddev:')
         for s in stddev[i]:
-            print(s)
+            print(round(s, 4))
         print('\n')
         
         # plots data and curve on graph and displays if output file is given
