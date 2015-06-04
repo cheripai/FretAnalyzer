@@ -47,7 +47,7 @@ def create_plot(filename, result, x, y, a, stddev, i):
     ticklabel_format(axis='y', style='sci', scilimits=(0,0) ) #this forces labels on the y axis into scientific format
 
     #appropriately labels the x and y axis, fontsize is arbitary
-    ylabel("EM$_{fret}$ (RFU)", fontsize=14) #removed fontweight='bold'
+    ylabel("Em$_{FRET}$ (RFU)", fontsize=14) #removed fontweight='bold'
     xlabel('Concentration of Acceptor') #pull label from users's input (ie uMoles, mMoles, picoMoles)
     
     
@@ -124,7 +124,7 @@ def main():
             for _ in ci[param_name]:
                 print('{}%\t{}'.format(_[0]*100, round(_[1], 4)))
             print('\n')
-        print('EmFRETMAX stddev:')
+        print('EmFRET stddev:')
         for s in stddev[i]:
             print(round(s, 4))
         print('\n')
