@@ -2,7 +2,7 @@
 from argparse import ArgumentParser
 from decimal import *
 from lmfit import conf_interval, report_ci, fit_report, minimize, Parameters, Parameter
-from matplotlib.pyplot import plot, savefig, text
+from matplotlib.pyplot import plot, savefig, text, ticklabel_format
 from numpy import array, linspace, sqrt, zeros, reshape, average, std
 
 
@@ -20,17 +20,32 @@ def create_plot(filename, result, x, y, a, stddev, i):
     xx = linspace(x.min(), x.max(), 50)         #so this returns 50 evenly spaced values between the start and stop points
     yy = emfret(result.params, xx, a)           #it uses each of these to calculate emfretmax (one per xx value)
     z = linspace(x.min(), x.max(), 50);
-    #this plots all the values contained in Y
-    points = [ 'b.', 'r.', 'y.']
-    other = ['b_', 'r_', 'y_'] #will plot colored horizontal lines for std dev
-    plot(x, y, points[i % 3])
+    
+    #this plots all the values contained in Y 
+    points = [ 'b.', 'r.', 'g.', 'c.', 'm.' ] #colors are: Blue, Red, Green, Cyan, Magenta.
+    #Do not use yellow, too hard to see against white background
+    stddev_points = ['b_', 'r_', 'g_', 'c_', 'm_'] #will plot colored horizontal lines for std dev
+    line_style = ['b-', 'r-', 'g-', 'c-', 'm-'] #uses dashes, but generally connects into a straight line
+
+    #tracks the number of colors used in the lists above. Rotate through this list as necessary
+    num_colors = len(points)
+
+    #note that markersize is completely arbitrary
+    plot(x, y, points[i % num_colors], markersize=15)
+
     #plot the std dev ( point +/- std dev)
-    plot(x, y-stddev, other[i % 3])
-    plot(x, y+stddev, other[i % 3] )
+    #again, markersize/width are arbitrary. Markeredgewith increases the size of the dashes used by expanding the border.
+    #the border is the same color as the interior of the marker, so it appears only the dashes got thicker
+    plot(x, y-stddev, stddev_points[i % num_colors], markersize=7, markeredgewidth=3)
+    plot(x, y+stddev, stddev_points[i % num_colors], markersize=7, markeredgewidth=3)
+
     #this plots the calcualted EMfret (xx,yy), and a black horizontal line through the origin (xx, z) for orientation of the axis
-    plot(xx, yy, 'g--')
+    plot(xx, yy, line_style[i % num_colors], linewidth=3)
     plot(xx, z, 'k-')
-    text(xx[-1], yy[-1], '{}'.format(i+1), ha='left', position=(xx[-1]+0.05, yy[-1])) #this adds labels
+
+    ticklabel_format(axis='y', style='sci', scilimits=(0,0) ) #this forces labels on the y axis into scientific format
+    
+    text(xx[-1], yy[-1], '{}'.format(i+1), ha='left', position=(xx[-1]+0.05, yy[-1])) #this numbers the lines
     savefig(filename, bbox_inches='tight', dpi=200)
 
 
