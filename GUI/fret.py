@@ -117,7 +117,7 @@ def main():
 
         # Print results
         print('Concentration: {}\n'.format(a[i]))
-        print('R-Squared: {}\n'.format(1-result.residual.var() / var(y)))
+        print('R-Squared: {}\n'.format(round(1-result.residual.var() / var(y), 4)))
         for param_name in params: 
             print('{}:\n{} ± {}\n'.format(param_name, round(params[param_name].value, 4), round(params[param_name].stderr, 4)))
             p_width = max(len(str(p)) for p in ci[param_name][0])
