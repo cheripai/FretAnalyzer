@@ -51,7 +51,7 @@ def create_plot(filename, result, x, y, a, stddev, i):
     xlabel('Concentration of Acceptor') #pull label from users's input (ie uMoles, mMoles, picoMoles)
     
     
-    text(xx[-1], yy[-1], '{}'.format(i+1), ha='left', position=(xx[-1]+0.05, yy[-1])) #this numbers the lines
+    text(xx[-1], yy[-1], '{}'.format(a), ha='left', position=(xx[-1]+0.05, yy[-1])) #this numbers the lines
     savefig(filename, bbox_inches='tight', dpi=200)
 
 
