@@ -393,18 +393,26 @@ void MainWindow::on_actionExit_triggered()
 
 void MainWindow::on_actionAbout_triggered()
 {
-    QMessageBox::information(this, "About","FretAnalyzer Version: 1.1\nBy: Dat Do, Hui Yang, and Patrick Cammall");
+    QMessageBox::information(this, "About","FretAnalyzer Version: 1.2\nBy: Dat Do, Hui Yang, and Patrick Cammall");
 }
 
 
 // Clears all existing data
 void MainWindow::on_actionNew_triggered()
 {
-    //ui->resultsFrame->setText("");
     QFile::remove(plotPath);
     QImage plot(plotPath);
     ui->inputTable->clearContents();
+    ui->resultsTable->clearContents();
     ui->plotFrame->setPixmap(QPixmap::fromImage(plot));
+
+    for(int i = 0; i < ui->inputTable->rowCount(); ++i)
+    {
+        for(int j = 0; j < ui->inputTable->columnCount(); ++j)
+        {
+            ui->inputTable->setSpan(i, j, 1, 1);
+        }
+    }
 
     Dialog dialog;
     dialog.show();
