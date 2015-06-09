@@ -1,6 +1,7 @@
 #!/usr/bin/python2
 from argparse import ArgumentParser
 from decimal import *
+import json
 from lmfit import conf_interval, report_ci, fit_report, minimize, Parameters, Parameter
 from matplotlib.pyplot import plot, savefig, text, ticklabel_format, xlabel, ylabel
 from numpy import array, linspace, sqrt, zeros, reshape, average, std, var
@@ -90,15 +91,15 @@ def main():
         f.close()
 
     else: #read from cmdline
-        x = array([float(val) for val in raw_input().split()])
-        num_rep = int(raw_input())
-        a = array([float(val) for val in raw_input().split()])
+        x = array([float(val) for val in raw_input.split()])
+        num_rep = int(raw_input)
+        a = array([float(val) for val in raw_input.split()])
         y = zeros((len(a), len(x)))
         stddev = zeros((len(a), len(x)))
         for i in range(len(a)):
             all_y = zeros((num_rep, len(x)))
             for j in range(num_rep):
-                all_y[j] = array([float(val) for val in raw_input().split()])
+                all_y[j] = array([float(val) for val in raw_input.split()])
             y[i] = average(all_y, axis=0)
             stddev[i] = std(all_y, axis=0)
 
@@ -107,32 +108,31 @@ def main():
     params = Parameters()
     params.add('Kd', value=1, min=0)
     params.add('EmFRETMAX', value=1, min=0)
+    return_data = {}
+    ci = []
     
     #run fitting procedure and display results
     #this needs to be repeated for each A value. Note that A[i] corresponds to Y[i]
     #X is assumed to hold constant across all of these, so it remains unchanged across iterations
     for i in range(len(a)):
         result = minimize(residuals, params, args=(x, y[i], a[i] ))
-        ci = conf_interval(result, maxiter=1000)
+        ci.append(conf_interval(result, maxiter=1000))
 
-        # Print results
-        print('Concentration: {}\n'.format(a[i]))
-        print('R-Squared: {}\n'.format(round(1-result.residual.var() / var(y), 4)))
-        for param_name in params: 
-            print('{}:\n{} ± {}\n'.format(param_name, round(params[param_name].value, 4), round(params[param_name].stderr, 4)))
-            p_width = max(len(str(p)) for p in ci[param_name][0])
-            getcontext().prec = 4
-            for _ in ci[param_name]:
-                print('{}%\t{}'.format(_[0]*100, round(_[1], 4)))
-            print('\n')
-        print('EmFRET stddev:')
-        for s in stddev[i]:
-            print(round(s, 4))
-        print('\n')
+        # generate table of results with tabulate
+        return_data[a[i]] = [a[i],
+                             round(params['Kd'].value, 4), 
+                             round(params['Kd'].stderr, 4), 
+                             round(params['EmFRETMAX'].value, 4),
+                             round(params['EmFRETMAX'].stderr, 4),
+                             round(1-result.residual.var() / var(y), 4)]
         
         # plots data and curve on graph and displays if output file is given
         if(args.plot):
             create_plot(args.plot, result, x, y[i], a[i], stddev[i], i)
+
+    print(json.dumps(return_data))
+    # for c in ci:
+    #     report_ci(c)
     
 if __name__ == "__main__":
     main()

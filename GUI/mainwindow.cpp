@@ -1,6 +1,9 @@
 #include <QClipboard>
 #include <QDebug>
 #include <QFileDialog>
+#include <QJsonValue>
+#include <QJsonDocument>
+#include <QJsonObject>
 #include <QMessageBox>
 #include <QPainter>
 #include <QPrinter>
@@ -44,7 +47,34 @@ void MainWindow::displayResultsFromProcess(int exitCode, QProcess::ExitStatus ex
         result = error;
     }
 
-    ui->resultsFrame->setText(result);
+    QJsonDocument jsonResponse = QJsonDocument::fromJson(result);
+    QJsonObject jsonObj = jsonResponse.object();
+    QStringList keys = jsonObj.keys();
+
+    QFont bold;
+    bold.setBold(true);
+
+    ui->resultsTable->setItem(0, 0, new QTableWidgetItem("Concentration"));
+    ui->resultsTable->setItem(0, 1, new QTableWidgetItem("Kd"));
+    ui->resultsTable->setItem(0, 2, new QTableWidgetItem("Std. Error"));
+    ui->resultsTable->setItem(0, 3, new QTableWidgetItem("EmFRETMAX (RFU)"));
+    ui->resultsTable->setItem(0, 4, new QTableWidgetItem("Std. Error"));
+    ui->resultsTable->setItem(0, 5, new QTableWidgetItem("R-Squared"));
+
+    for(int i = 0; i < 6; ++i)
+    {
+        ui->resultsTable->item(0, i)->setBackgroundColor(Qt::gray);
+        ui->resultsTable->item(0, i)->setFont(bold);
+    }
+
+    for(int i = 0; i < keys.length(); ++i)
+    {
+        QJsonArray values = jsonObj[keys[i]].toArray();
+        for(int j = 0; j < values.size(); ++j)
+        {
+            ui->resultsTable->setItem(i+1, j, new QTableWidgetItem(QString("%1").arg(values[j].toDouble())));
+        }
+    }
 
     // Presents plot on GUI
     QImage plot(plotPath);
@@ -370,7 +400,7 @@ void MainWindow::on_actionAbout_triggered()
 // Clears all existing data
 void MainWindow::on_actionNew_triggered()
 {
-    ui->resultsFrame->setText("");
+    //ui->resultsFrame->setText("");
     QFile::remove(plotPath);
     QImage plot(plotPath);
     ui->inputTable->clearContents();
@@ -449,7 +479,7 @@ void MainWindow::on_actionExport_Data_triggered()
     if(file.open(QIODevice::ReadWrite))
     {
         QTextStream stream(&file);
-        stream << ui->resultsFrame->toPlainText();
+        //stream << ui->resultsFrame->toPlainText();
     }
     file.close();
 }
