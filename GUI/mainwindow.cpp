@@ -479,7 +479,21 @@ void MainWindow::on_actionExport_Data_triggered()
     if(file.open(QIODevice::ReadWrite))
     {
         QTextStream stream(&file);
-        //stream << ui->resultsFrame->toPlainText();
+        QTableWidget * table = ui->resultsTable;
+        for(int i = 0; i < table->rowCount(); ++i)
+        {
+            for(int j = 0; j < table->columnCount(); ++j)
+            {
+                if(table->item(i, j))
+                {
+                    stream << table->item(i, j)->text() << '\t';
+                }
+            }
+            if(table->item(i+1, 0))
+            {
+                stream << '\n';
+            }
+        }
     }
     file.close();
 }
