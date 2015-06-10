@@ -1,10 +1,9 @@
 #!/usr/bin/python2
 from argparse import ArgumentParser
 from decimal import *
-import json
 from lmfit import conf_interval, report_ci, fit_report, minimize, Parameters, Parameter
-from matplotlib.pyplot import plot, savefig, text, ticklabel_format, xlabel, ylabel
-from numpy import array, linspace, sqrt, zeros, reshape, average, std, var
+from matplotlib.pyplot import plot, savefig, text, ticklabel_format, xlabel, ylabel, legend
+from numpy import array, linspace, sqrt, zeros, reshape, average, std
 
 
 def emfret(params, x, a):
@@ -17,7 +16,7 @@ def residuals(params, x, y, a):
     return y - emfret(params, x, a)
 
 
-def create_plot(filename, result, x, y, a, stddev, i):
+def create_scatter(filename, result, x, y, a, stddev, i, units):
     xx = linspace(x.min(), x.max(), 50)         #so this returns 50 evenly spaced values between the start and stop points
     yy = emfret(result.params, xx, a)           #it uses each of these to calculate emfretmax (one per xx value)
     z = linspace(x.min(), x.max(), 50);
@@ -32,7 +31,8 @@ def create_plot(filename, result, x, y, a, stddev, i):
     num_colors = len(points)
 
     #note that markersize is completely arbitrary
-    plot(x, y, points[i % num_colors], markersize=15)
+    #this plots the points of the given data, the calculated line is done below
+    plot(x, y, points[i % num_colors], markersize=15 )
 
     #plot the std dev ( point +/- std dev)
     #again, markersize/width are arbitrary. Markeredgewith increases the size of the dashes used by expanding the border.
@@ -42,24 +42,66 @@ def create_plot(filename, result, x, y, a, stddev, i):
     plot([x,x], [y-stddev, y+stddev], line_style[i%num_colors], linewidth=1) #this plots a vertical line between stddev values
     
     #this plots the calcualted EMfret (xx,yy), and a black horizontal line through the origin (xx, z) for orientation of the axis
-    plot(xx, yy, line_style[i % num_colors], linewidth=3)
+    line = plot(xx, yy, line_style[i % num_colors], linewidth=3, label='Line ' + str(i+1))
     plot(xx, z, 'k-')
 
     ticklabel_format(axis='y', style='sci', scilimits=(0,0) ) #this forces labels on the y axis into scientific format
 
+    #calling this with no parameters will cause the legend to appear (
+    #Adding in parameters allows changing of specific parts of the legend (minimum : legend ( handle, label)
+    #handle refers to the line, label is already specified above
+    legend( )
+
     #appropriately labels the x and y axis, fontsize is arbitary
-    ylabel("Em$_{FRET}$ (RFU)", fontsize=14) #removed fontweight='bold'
-    xlabel('Concentration of Acceptor') #pull label from users's input (ie uMoles, mMoles, picoMoles)
+    ylabel("EM$_{fret}$ (RFU)", fontsize=14) #removed fontweight='bold'
+
+    unit_label = 'p'
+    if ( units == 'u'):
+        #add micro symbol
+        unit_label = u"\u00B5"
+        unit_label = unit_label + 'mol'
+    elif ( units == 'n'):
+        #add nano symbol
+        unit_label = 'nmol'
+    elif ( units == 'p'):
+        #pico
+        unit_label = 'pmol'
+    xlabel('Concentration of Acceptor (' + unit_label + ')')
     
-    
-    text(xx[-1], yy[-1], '{}'.format(a), ha='left', position=(xx[-1]+0.05, yy[-1])) #this numbers the lines
     savefig(filename, bbox_inches='tight', dpi=200)
 
+def create_bar(filename, kd, emfretmax, i):
+    #i don't think i need that many parameters
+    #bar() takes inputs in this order
+        # leftmost coordinate of bar (lower left). This can be a list
+        # heigh of bar. This can also be a list
+        # width of bar (optional)
+        # ycoord of bar (for stacking) (probably not a good idea for this)
+        # other stuff (including color)
 
+    bar_colors = ['b', 'r', 'g', 'c', 'm' ]
+    num_colors = len(bar_colors)
+
+    print "len kd: ", len(kd)
+    print "len emfret: ", len(emfretmax)
+    ind = arrange( len(kd) ) #this creates the X locations to place the bars
+
+    #using the default width of .8 as the offset. This will place the second bar next to the first
+    #the idea is to end up with bars grouped similar to AA BB CC
+    offset = 0.8
+
+    bar( ind, kd, offset, color='r') #first plots all the KD values
+    bar( ind+width, emfretmax, offset, color='b') #then plots all the Emfretmax values, automatically shifted over
+    set_xticklabels( range( 1, len(kd)+1 ) )
+    
+    savefig(filename, bbox_inches='tight', dpi=200)
+    
 def init_argparse():
     parser = ArgumentParser(description='Runs script on commandline arguments')
     parser.add_argument('-i', '--input', help='Input file', required=False)
-    parser.add_argument('-p', '--plot', help='Output file for plot', required=False)
+    parser.add_argument('-s', '--scatter', help='Output file for scatter plot', required=False)
+    parser.add_argument('-b', '--bar', help='Output file for bar chart', required=False)
+    parser.add_argument('-u', '--unit', help='Units to use on output files', required=False)
     return parser.parse_args()
     
 
@@ -108,31 +150,33 @@ def main():
     params = Parameters()
     params.add('Kd', value=1, min=0)
     params.add('EmFRETMAX', value=1, min=0)
-    return_data = {}
-    ci = []
     
     #run fitting procedure and display results
     #this needs to be repeated for each A value. Note that A[i] corresponds to Y[i]
     #X is assumed to hold constant across all of these, so it remains unchanged across iterations
     for i in range(len(a)):
         result = minimize(residuals, params, args=(x, y[i], a[i] ))
-        ci.append(conf_interval(result, maxiter=1000))
+        ci = conf_interval(result, maxiter=1000)
 
-        # generate table of results with tabulate
-        return_data[a[i]] = [a[i],
-                             round(params['Kd'].value, 4), 
-                             round(params['Kd'].stderr, 4), 
-                             round(params['EmFRETMAX'].value, 4),
-                             round(params['EmFRETMAX'].stderr, 4),
-                             round(1-result.residual.var() / var(y), 4)]
+        # Print results
+        print('Y{}:\n'.format(i+1))
+        for param_name in params: 
+            print('{}:\n{}\n'.format(param_name, round(params[param_name].value, 4)))
+            p_width = max(len(str(p)) for p in ci[param_name][0])
+            getcontext().prec = 4
+            for _ in ci[param_name]:
+                print('{}%\t{}'.format(_[0]*100, round(_[1], 4)))
+            print('\n')
+        print('EmFRETMAX stddev:')
+        for s in stddev[i]:
+            print(s)
+        print('\n')
         
         # plots data and curve on graph and displays if output file is given
-        if(args.plot):
-            create_plot(args.plot, result, x, y[i], a[i], stddev[i], i)
-
-    print(json.dumps(return_data))
-    # for c in ci:
-    #     report_ci(c)
+        if(args.scatter):
+            create_scatter(args.scatter, result, x, y[i], a[i], stddev[i], i, args.unit)
+        if(args.bar):
+            print "Create Bar Chart" 
     
 if __name__ == "__main__":
     main()
