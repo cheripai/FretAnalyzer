@@ -30,3 +30,6 @@ RESOURCES += resources.qrc
 install_it.path = $$OUT_PWD
 install_it.files = fret.py
 INSTALLS += install_it
+
+win32: RC_ICONS = \
+    images/logo.ico
