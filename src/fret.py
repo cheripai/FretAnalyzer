@@ -54,7 +54,7 @@ def create_scatter(filename, result, x, y, a, stddev, i, units):
     legend( )
 
     #appropriately labels the x and y axis, fontsize is arbitary
-    ylabel("EM$_{fret}$ (RFU)", fontsize=14) #removed fontweight='bold'
+    ylabel("EM$_{FRET}$ (RFU)", fontsize=14) #removed fontweight='bold'
 
     unit_label = 'p'
     if ( units == 'u'):
