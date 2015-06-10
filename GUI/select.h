@@ -10,6 +10,7 @@ class Select: public QDialog
 public:
     Select();
     QComboBox *selectBox;
+    QLabel *label;
 private:
     void createFormGroupBox();
     QGroupBox *formGroupBox;

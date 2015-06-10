@@ -2,7 +2,7 @@
 
 Select::Select()
 {
-    resize(300, 200);
+    resize(350, 250);
     createFormGroupBox();
 
     buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
@@ -24,11 +24,15 @@ void Select::createFormGroupBox()
     selectBox->addItem(tr("Protein interaction dissociation constant"));
     selectBox->addItem(tr("Enzyme Kinetics"));
 
-
+    label = new QLabel(this);
+    QPixmap pixmap(":/images/graph.png");
+    label->setPixmap(pixmap);
 
     formGroupBox = new QGroupBox(tr("Kinetics Parameter Determinations"));
     QFormLayout *layout = new QFormLayout;
 
     layout->addRow(new QLabel(tr("Select:")), selectBox);
+    layout->addWidget(label);
     formGroupBox->setLayout(layout);
+
 }
