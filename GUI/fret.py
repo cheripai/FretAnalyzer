@@ -1,4 +1,4 @@
-#!/usr/bin/python2
+#!/usr/bin/python
 from argparse import ArgumentParser
 from decimal import *
 import json
@@ -134,15 +134,15 @@ def main():
         f.close()
 
     else: #read from cmdline
-        x = array([float(val) for val in raw_input().split()])
-        num_rep = int(raw_input())
-        a = array([float(val) for val in raw_input().split()])
+        x = array([float(val) for val in input().split()])
+        num_rep = int(input())
+        a = array([float(val) for val in input().split()])
         y = zeros((len(a), len(x)))
         stddev = zeros((len(a), len(x)))
         for i in range(len(a)):
             all_y = zeros((num_rep, len(x)))
             for j in range(num_rep):
-                all_y[j] = array([float(val) for val in raw_input().split()])
+                all_y[j] = array([float(val) for val in input().split()])
             y[i] = average(all_y, axis=0)
             stddev[i] = std(all_y, axis=0)
 

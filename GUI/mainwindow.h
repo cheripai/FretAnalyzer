@@ -20,7 +20,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit MainWindow(int nRow,int nSet, int nRep, QWidget *parent = 0);
+    explicit MainWindow(int nRow,int nSet, int nRep, QString units, QWidget *parent = 0);
     ~MainWindow();
 
 private slots:
@@ -43,6 +43,7 @@ private:
     int nSets;
     int nReplicates;
     int topSpacing;
+    QString units;
     QString plotPath;
     QClipboard *clipboard;
     bool hasEmptyCells();

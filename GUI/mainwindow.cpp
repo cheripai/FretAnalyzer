@@ -12,7 +12,7 @@
 #include "ui_mainwindow.h"
 
 
-MainWindow::MainWindow(int nRow, int nSet, int nRep, QWidget *parent) :
+MainWindow::MainWindow(int nRow, int nSet, int nRep, QString units, QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
@@ -21,6 +21,7 @@ MainWindow::MainWindow(int nRow, int nSet, int nRep, QWidget *parent) :
     nRows = nRow;
     nSets = nSet;
     nReplicates = nRep;
+    this->units = units;
     clipboard = QApplication::clipboard();
     topSpacing = 3;
     organizeInputTable(nRows, nSets, nReplicates, true);
@@ -55,7 +56,7 @@ void MainWindow::displayResultsFromProcess(int exitCode, QProcess::ExitStatus ex
     bold.setBold(true);
 
     ui->resultsTable->setItem(0, 0, new QTableWidgetItem("Concentration"));
-    ui->resultsTable->setItem(0, 1, new QTableWidgetItem("Kd"));
+    ui->resultsTable->setItem(0, 1, new QTableWidgetItem(QString("%1 (%2)").arg("Kd").arg(units)));
     ui->resultsTable->setItem(0, 2, new QTableWidgetItem("Std. Error"));
     ui->resultsTable->setItem(0, 3, new QTableWidgetItem("EmFRETMAX (RFU)"));
     ui->resultsTable->setItem(0, 4, new QTableWidgetItem("Std. Error"));
@@ -245,11 +246,26 @@ void MainWindow::runFretPy(QVector<double> a, QVector<double> x, GridDbl y, int 
     QString aStr = vecToString(a);
     QString xStr = vecToString(x);
     QString yStr = gridToString(y);
-    arguments << "fret.py";
 
     if(plotPath != "" && ui->graphCheckBox->isChecked())
     {
-        arguments << "-p" << plotPath;
+        arguments << "-s" << plotPath;
+    }
+    if(units == "μM")
+    {
+        arguments << "-u" << "u";
+    }
+    else if(units == "nM")
+    {
+        arguments << "-u" << "n";
+    }
+    else if(units == "pM")
+    {
+        arguments << "-u" << "p";
+    }
+    else
+    {
+        qDebug() << "Error incorrect unit: " << units;
     }
 
     fretPy = new QProcess(this);
@@ -257,7 +273,7 @@ void MainWindow::runFretPy(QVector<double> a, QVector<double> x, GridDbl y, int 
 
 
     // Starts python script and writes data to stdin of script
-    fretPy->start("python", arguments);
+    fretPy->start("./fret.py", arguments);
     fretPy->write(xStr.toLatin1());
     fretPy->write(QString::number(nReplicates).toLatin1().append('\n'));
     fretPy->write(aStr.toLatin1());
@@ -482,7 +498,7 @@ void MainWindow::on_actionExport_triggered()
 
 void MainWindow::on_actionExport_Data_triggered()
 {
-    QString filename = QFileDialog::getSaveFileName(this, tr("Save File"), "untitled", tr("Text file (*.txt)")).append(".txt");
+    QString filename = QFileDialog::getSaveFileName(this, tr("Save File"), "untitled", tr("CSV file (*.csv)")).append(".csv");
     QFile file(filename);
     if(file.open(QIODevice::ReadWrite))
     {
@@ -494,7 +510,7 @@ void MainWindow::on_actionExport_Data_triggered()
             {
                 if(table->item(i, j))
                 {
-                    stream << table->item(i, j)->text() << '\t';
+                    stream << table->item(i, j)->text() << ',';
                 }
             }
             if(table->item(i+1, 0))

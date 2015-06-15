@@ -10,7 +10,7 @@ int main(int argc, char *argv[])
     Select selectdialog;
     selectdialog.show();
 
-    int nRep=0, nSet = 0, nRow = 0;
+    int nRep = 0, nSet = 0, nRow = 0;
 
     // first, shows the select diaglog ->
     // second, shows the table setting dialog->
@@ -23,8 +23,9 @@ int main(int argc, char *argv[])
             nRow = dialog.rowValueSpinBox->value();
             nRep = dialog.yvalueSpinBox->value();
             nSet = dialog.numSetsSpinBox->value();
+            QString units = dialog.unitBox->currentText();
 
-            MainWindow w(nRow,nSet,nRep);
+            MainWindow w(nRow,nSet,nRep,units);
             w.show();
             return app.exec();
         }
