@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python2
 from argparse import ArgumentParser
 from decimal import *
 import json
@@ -43,7 +43,7 @@ def create_scatter(filename, result, x, y, a, stddev, i, units):
     plot([x,x], [y-stddev, y+stddev], line_style[i%num_colors], linewidth=1) #this plots a vertical line between stddev values
     
     #this plots the calcualted EMfret (xx,yy), and a black horizontal line through the origin (xx, z) for orientation of the axis
-    line = plot(xx, yy, line_style[i % num_colors], linewidth=3, label='Line ' + str(i+1))
+    line = plot(xx, yy, line_style[i % num_colors], linewidth=3, label='A = ' + str(a))
     plot(xx, z, 'k-')
 
     ticklabel_format(axis='y', style='sci', scilimits=(0,0) ) #this forces labels on the y axis into scientific format
@@ -134,15 +134,15 @@ def main():
         f.close()
 
     else: #read from cmdline
-        x = array([float(val) for val in input().split()])
-        num_rep = int(input())
-        a = array([float(val) for val in input().split()])
+        x = array([float(val) for val in raw_input().split()])
+        num_rep = int(raw_input())
+        a = array([float(val) for val in raw_input().split()])
         y = zeros((len(a), len(x)))
         stddev = zeros((len(a), len(x)))
         for i in range(len(a)):
             all_y = zeros((num_rep, len(x)))
             for j in range(num_rep):
-                all_y[j] = array([float(val) for val in input().split()])
+                all_y[j] = array([float(val) for val in raw_input().split()])
             y[i] = average(all_y, axis=0)
             stddev[i] = std(all_y, axis=0)
 

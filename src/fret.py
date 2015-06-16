@@ -43,7 +43,7 @@ def create_scatter(filename, result, x, y, a, stddev, i, units):
     plot([x,x], [y-stddev, y+stddev], line_style[i%num_colors], linewidth=1) #this plots a vertical line between stddev values
     
     #this plots the calcualted EMfret (xx,yy), and a black horizontal line through the origin (xx, z) for orientation of the axis
-    line = plot(xx, yy, line_style[i % num_colors], linewidth=3, label='Line ' + str(i+1))
+    line = plot(xx, yy, line_style[i % num_colors], linewidth=3, label='A = ' + str(a))
     plot(xx, z, 'k-')
 
     ticklabel_format(axis='y', style='sci', scilimits=(0,0) ) #this forces labels on the y axis into scientific format
