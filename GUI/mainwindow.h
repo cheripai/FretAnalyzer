@@ -36,6 +36,8 @@ private slots:
     void on_actionExport_Data_triggered();
     void on_actionImport_triggered();
 
+    void on_actionExport_Bar_triggered();
+
 private:
     Ui::MainWindow *ui;
     QProcess *fretPy;
@@ -44,13 +46,15 @@ private:
     int nReplicates;
     int topSpacing;
     QString units;
-    QString plotPath;
+    QString scatterPath;
+    QString barPath;
     QClipboard *clipboard;
     bool hasEmptyCells();
     void importFromCSV(QString fileName);
     void organizeInputTable(int nRows, int nSets, int nReplicates, bool organizeAll);
     GridStr readGrid();
-    void runFretPy(QVector<double> a, QVector<double> x, GridDbl y, int nReplicates, QString plotPath);
+    void runFretPy(QVector<double> a, QVector<double> x, GridDbl y, int nReplicates, QString plotPath, QString barPath);
+    void exportImage(QString path);
     QString selectFile();
     void copy();
     void paste();

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1056</width>
-    <height>655</height>
+    <height>700</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -69,6 +69,9 @@
         <horstretch>0</horstretch>
         <verstretch>0</verstretch>
        </sizepolicy>
+      </property>
+      <property name="focusPolicy">
+       <enum>Qt::TabFocus</enum>
       </property>
       <property name="autoFillBackground">
        <bool>true</bool>
@@ -441,9 +444,9 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="plotTab">
+      <widget class="QWidget" name="scatterTab">
        <attribute name="title">
-        <string>Plot</string>
+        <string>Scatter</string>
        </attribute>
        <layout class="QHBoxLayout" name="horizontalLayout">
         <item>
@@ -508,6 +511,73 @@
         </item>
        </layout>
       </widget>
+      <widget class="QWidget" name="barTab">
+       <attribute name="title">
+        <string>Bar</string>
+       </attribute>
+       <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <item>
+         <spacer name="horizontalSpacer_4">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>142</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QLabel" name="barFrame">
+          <property name="minimumSize">
+           <size>
+            <width>720</width>
+            <height>540</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>853</width>
+            <height>640</height>
+           </size>
+          </property>
+          <property name="autoFillBackground">
+           <bool>false</bool>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">background-color: rgb(255, 255, 255);</string>
+          </property>
+          <property name="frameShape">
+           <enum>QFrame::NoFrame</enum>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+          <property name="scaledContents">
+           <bool>true</bool>
+          </property>
+          <property name="margin">
+           <number>60</number>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer_3">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>142</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </widget>
      </widget>
     </item>
    </layout>
@@ -530,6 +600,7 @@
     <addaction name="actionImport"/>
     <addaction name="actionExport_Data"/>
     <addaction name="actionExport"/>
+    <addaction name="actionExport_Bar"/>
     <addaction name="actionExit"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
@@ -605,10 +676,7 @@
   </action>
   <action name="actionExport">
    <property name="text">
-    <string>Export Plot</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+Shift+E</string>
+    <string>Export Scatter</string>
    </property>
   </action>
   <action name="actionImport">
@@ -625,6 +693,11 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+E</string>
+   </property>
+  </action>
+  <action name="actionExport_Bar">
+   <property name="text">
+    <string>Export Bar</string>
    </property>
   </action>
  </widget>

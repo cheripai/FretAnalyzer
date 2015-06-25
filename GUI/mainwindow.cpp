@@ -17,7 +17,8 @@ MainWindow::MainWindow(int nRow, int nSet, int nRep, QString units, QWidget *par
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    plotPath = "plot.png";
+    scatterPath = "scatter.png";
+    barPath = "bar.png";
     nRows = nRow;
     nSets = nSet;
     nReplicates = nRep;
@@ -30,7 +31,8 @@ MainWindow::MainWindow(int nRow, int nSet, int nRep, QString units, QWidget *par
 
 MainWindow::~MainWindow()
 {
-    QFile::remove(plotPath);
+    QFile::remove(scatterPath);
+    QFile::remove(barPath);
     delete ui;
 }
 
@@ -78,8 +80,10 @@ void MainWindow::displayResultsFromProcess(int exitCode, QProcess::ExitStatus ex
     }
 
     // Presents plot on GUI
-    QImage plot(plotPath);
-    ui->plotFrame->setPixmap(QPixmap::fromImage(plot));
+    QImage scatter(scatterPath);
+    ui->plotFrame->setPixmap(QPixmap::fromImage(scatter));
+    QImage bar(barPath);
+    ui->barFrame->setPixmap(QPixmap::fromImage(bar));
     ui->statusBar->showMessage(tr("Finished."));
 
     delete fretPy;
@@ -240,16 +244,17 @@ GridStr MainWindow::readGrid()
 
 
 // Calls external python script to perform nonlinear regression
-void MainWindow::runFretPy(QVector<double> a, QVector<double> x, GridDbl y, int nReplicates, QString plotPath)
+void MainWindow::runFretPy(QVector<double> a, QVector<double> x, GridDbl y, int nReplicates, QString scatterPath, QString barPath)
 {
     QStringList arguments;
     QString aStr = vecToString(a);
     QString xStr = vecToString(x);
     QString yStr = gridToString(y);
 
-    if(plotPath != "" && ui->graphCheckBox->isChecked())
+    if(scatterPath != "" && barPath != "" && ui->graphCheckBox->isChecked())
     {
-        arguments << "-s" << plotPath;
+        arguments << "-s" << scatterPath;
+        arguments << "-b" << barPath;
     }
     if(units == "μM")
     {
@@ -375,7 +380,8 @@ void MainWindow::on_calculateBtn_clicked()
     }
 
     ui->statusBar->showMessage(tr("Calculating..."));
-    QFile::remove(plotPath);    // removes old plot (if it exists) prior to new generation
+    QFile::remove(scatterPath);    // removes old plot (if it exists) prior to new generation
+    QFile::remove(barPath);    // removes old plot (if it exists) prior to new generation
 
     GridStr grid = readGrid();
     QVector<double> a = getAValues(grid, nSets, nReplicates);
@@ -391,7 +397,7 @@ void MainWindow::on_calculateBtn_clicked()
         qDebug() << "Error: size of a and nSets have different values";
     }
 
-    runFretPy(a, x, y, nReplicates, plotPath);
+    runFretPy(a, x, y, nReplicates, scatterPath, barPath);
 }
 
 
@@ -409,18 +415,20 @@ void MainWindow::on_actionExit_triggered()
 
 void MainWindow::on_actionAbout_triggered()
 {
-    QMessageBox::information(this, "About","FretAnalyzer Version: 1.2\nBy: Dat Do, Hui Yang, and Patrick Cammall");
+    QMessageBox::information(this, "About","FretAnalyzer Version: 1.3\nBy: Dat Do, Hui Yang, and Patrick Cammall");
 }
 
 
 // Clears all existing data
 void MainWindow::on_actionNew_triggered()
 {
-    QFile::remove(plotPath);
-    QImage plot(plotPath);
+    QFile::remove(scatterPath);
+    QFile::remove(barPath);
+    QImage plot(scatterPath);
     ui->inputTable->clearContents();
     ui->resultsTable->clearContents();
     ui->plotFrame->setPixmap(QPixmap::fromImage(plot));
+    ui->barFrame->setPixmap(QPixmap::fromImage(plot));
 
     for(int i = 0; i < ui->inputTable->rowCount(); ++i)
     {
@@ -482,11 +490,23 @@ void MainWindow::on_actionDelete_triggered()
 
 void MainWindow::on_actionExport_triggered()
 {
+    exportImage(scatterPath);
+}
+
+
+void MainWindow::on_actionExport_Bar_triggered()
+{
+    exportImage(barPath);
+}
+
+
+void MainWindow::exportImage(QString path)
+{
     QString filename = QFileDialog::getSaveFileName(this, tr("Save File"), "untitled", tr("PNG image (*.png)"));
-    QFileInfo checkFile(plotPath);
+    QFileInfo checkFile(path);
     if(checkFile.exists() && checkFile.isFile())
     {
-        QFile::copy(plotPath, filename.append(".png"));
+        QFile::copy(path, filename.append(".png"));
     }
     else
     {
