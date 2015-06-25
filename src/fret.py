@@ -3,8 +3,8 @@ from argparse import ArgumentParser
 from decimal import *
 import json
 from lmfit import conf_interval, report_ci, fit_report, minimize, Parameters, Parameter
-from matplotlib.pyplot import plot, savefig, text, ticklabel_format, xlabel, ylabel, legend
-from numpy import array, linspace, sqrt, zeros, reshape, average, std, var
+from matplotlib.pyplot import plot, savefig, text, ticklabel_format, xlabel, ylabel, legend, subplots
+from numpy import arange, array, linspace, sqrt, zeros, reshape, average, std, var
 
 
 def emfret(params, x, a):
@@ -51,16 +51,16 @@ def create_scatter(filename, result, x, y, a, stddev, i, units):
     #calling this with no parameters will cause the legend to appear (
     #Adding in parameters allows changing of specific parts of the legend (minimum : legend ( handle, label)
     #handle refers to the line, label is already specified above
-    legend( )
+    legend()
 
-    #appropriately labels the x and y axis, fontsize is arbitary
-    ylabel("EM$_{FRET}$ (RFU)", fontsize=14) #removed fontweight='bold'
+    # appropriately labels the x and y axis, fontsize is arbitary
+    ylabel("Em$_{FRET}$ (RFU)", fontsize=14)
 
     unit_label = 'p'
     if ( units == 'u'):
         #add micro symbol
         unit_label = u"\u00B5"
-        unit_label = unit_label + 'mol'
+        unit_label = unit_label + 'M'
     elif ( units == 'n'):
         #add nano symbol
         unit_label = 'nmol'
@@ -68,35 +68,24 @@ def create_scatter(filename, result, x, y, a, stddev, i, units):
         #pico
         unit_label = 'pmol'
     xlabel('Concentration of Acceptor (' + unit_label + ')')
-    
     savefig(filename, bbox_inches='tight', dpi=200)
 
-def create_bar(filename, kd, emfretmax, i):
-    #i don't think i need that many parameters
-    #bar() takes inputs in this order
-        # leftmost coordinate of bar (lower left). This can be a list
-        # heigh of bar. This can also be a list
-        # width of bar (optional)
-        # ycoord of bar (for stacking) (probably not a good idea for this)
-        # other stuff (including color)
 
-    bar_colors = ['b', 'r', 'g', 'c', 'm' ]
-    num_colors = len(bar_colors)
+def create_bar(filename, emfretmax, emfretmax_error, a):
+    # Creates x locations to place the bars
+    ind = arange(len(emfretmax))
+    fig, ax = subplots()
 
-    print("len kd: ", len(kd))
-    print("len emfret: ", len(emfretmax))
-    ind = arrange( len(kd) ) #this creates the X locations to place the bars
+    width = 0.35
 
-    #using the default width of .8 as the offset. This will place the second bar next to the first
-    #the idea is to end up with bars grouped similar to AA BB CC
-    offset = 0.8
-
-    bar( ind, kd, offset, color='r') #first plots all the KD values
-    bar( ind+width, emfretmax, offset, color='b') #then plots all the Emfretmax values, automatically shifted over
-    set_xticklabels( range( 1, len(kd)+1 ) )
-    
+    ax.bar(ind, emfretmax, width, color='r', yerr=emfretmax_error)
+    ax.set_ylabel("Em$_{FRETMAX}$", fontsize=14)
+    ax.set_xticks(ind+width/2)
+    ax.set_xticklabels(a)
+    ax.ticklabel_format(axis='y', style='sci', scilimits=(0, 0))
     savefig(filename, bbox_inches='tight', dpi=200)
-    
+
+
 def init_argparse():
     parser = ArgumentParser(description='Runs script on commandline arguments')
     parser.add_argument('-i', '--input', help='Input file', required=False)
@@ -104,21 +93,19 @@ def init_argparse():
     parser.add_argument('-b', '--bar', help='Output file for bar chart', required=False)
     parser.add_argument('-u', '--unit', help='Units to use on output files', required=False)
     return parser.parse_args()
-    
+
 
 def main():
 
     # sets up command line argument parser
     args = init_argparse()
 
-
-    # IMPORTANT: The format of the file has been changed. The new
-    #       format is:
+    #       The file format is:
     #           X values of size n
     #           Number of replicates
     #           A values
     #           Y values with n values on each line
-    if(args.input): #has i flag, read from specified file
+    if(args.input):  # has i flag, read from specified file
         f = open(args.input, 'r')
         x = array([float(val) for val in f.readline().split()])
         num_rep = int(f.readline())
@@ -153,13 +140,17 @@ def main():
     params.add('EmFRETMAX', value=1, min=0)
     return_data = {}
     ci = []
-    
+    emfretmax = []
+    emfretmax_error = []
+
     #run fitting procedure and display results
     #this needs to be repeated for each A value. Note that A[i] corresponds to Y[i]
     #X is assumed to hold constant across all of these, so it remains unchanged across iterations
     for i in range(len(a)):
         result = minimize(residuals, params, args=(x, y[i], a[i] ))
         ci.append(conf_interval(result, maxiter=1000))
+        emfretmax.append(params['EmFRETMAX'].value)
+        emfretmax_error.append(params['EmFRETMAX'].stderr)
 
         # generate table of results with tabulate
         return_data[a[i]] = [a[i],
@@ -173,8 +164,8 @@ def main():
         # plots data and curve on graph and displays if output file is given
         if(args.scatter):
             create_scatter(args.scatter, result, x, y[i], a[i], stddev[i], i, args.unit)
-        if(args.bar):
-            print("Create Bar Chart")
+    if(args.bar):
+        create_bar(args.bar, emfretmax, emfretmax_error, a)
 
     print(json.dumps(return_data))
     
