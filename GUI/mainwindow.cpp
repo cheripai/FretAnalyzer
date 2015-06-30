@@ -57,8 +57,8 @@ void MainWindow::displayResultsFromProcess(int exitCode, QProcess::ExitStatus ex
     QFont bold;
     bold.setBold(true);
 
-    ui->resultsTable->setItem(0, 0, new QTableWidgetItem("Concentration"));
-    ui->resultsTable->setItem(0, 1, new QTableWidgetItem(QString("%1 (%2)").arg("Kd").arg(units)));
+    ui->resultsTable->setItem(0, 0, new QTableWidgetItem(QString("Donor [%1]").arg(units)));
+    ui->resultsTable->setItem(0, 1, new QTableWidgetItem(QString("%1 [%2]").arg("Kd").arg(units)));
     ui->resultsTable->setItem(0, 2, new QTableWidgetItem("Std. Error"));
     ui->resultsTable->setItem(0, 3, new QTableWidgetItem("EmFRETMAX (RFU)"));
     ui->resultsTable->setItem(0, 4, new QTableWidgetItem("Std. Error"));

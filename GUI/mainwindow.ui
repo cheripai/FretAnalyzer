@@ -446,7 +446,7 @@
       </widget>
       <widget class="QWidget" name="scatterTab">
        <attribute name="title">
-        <string>Scatter</string>
+        <string>Plot</string>
        </attribute>
        <layout class="QHBoxLayout" name="horizontalLayout">
         <item>

@@ -4,6 +4,7 @@ from decimal import *
 import json
 from lmfit import conf_interval, report_ci, fit_report, minimize, Parameters, Parameter
 from matplotlib.pyplot import plot, savefig, text, ticklabel_format, xlabel, ylabel, legend, subplots
+from pylab import gca, ScalarFormatter
 from numpy import arange, array, linspace, sqrt, zeros, reshape, average, std, var
 
 
@@ -31,6 +32,7 @@ def create_scatter(filename, result, x, y, a, stddev, i, units):
     #tracks the number of colors used in the lists above. Rotate through this list as necessary
     num_colors = len(points)
 
+
     #note that markersize is completely arbitrary
     #this plots the points of the given data, the calculated line is done below
     plot(x, y, points[i % num_colors], markersize=15 )
@@ -42,19 +44,39 @@ def create_scatter(filename, result, x, y, a, stddev, i, units):
     plot(x, y+stddev, stddev_points[i % num_colors], markersize=7, markeredgewidth=3)
     plot([x,x], [y-stddev, y+stddev], line_style[i%num_colors], linewidth=1) #this plots a vertical line between stddev values
     
+    unit_label = 'p'
+    if ( units == 'u'):
+        #add micro symbol
+        unit_label = u"\u00B5"
+        unit_label = unit_label + 'M'
+    elif ( units == 'n'):
+        #add nano symbol
+        unit_label = 'nM'
+    elif ( units == 'p'):
+        #pico
+        unit_label = 'pM'
+
     #this plots the calcualted EMfret (xx,yy), and a black horizontal line through the origin (xx, z) for orientation of the axis
-    line = plot(xx, yy, line_style[i % num_colors], linewidth=3, label='A = ' + str(a))
+    line = plot(xx, yy, line_style[i % num_colors], linewidth=3, label='Donor [{}] = {}'.format(unit_label, str(a)))
     plot(xx, z, 'k-')
 
-    ticklabel_format(axis='y', style='sci', scilimits=(0,0) ) #this forces labels on the y axis into scientific format
-
-    #calling this with no parameters will cause the legend to appear (
-    #Adding in parameters allows changing of specific parts of the legend (minimum : legend ( handle, label)
-    #handle refers to the line, label is already specified above
-    legend()
+    gca().yaxis.set_major_formatter(ScalarFormatter(useMathText=True))
+    ticklabel_format(axis='y', style='sci', scilimits=(0,0)) #this forces labels on the y axis into scientific format
 
     # appropriately labels the x and y axis, fontsize is arbitary
+    xlabel('Concentration of Acceptor [' + unit_label + ']')
     ylabel("Em$_{FRET}$ (RFU)", fontsize=14)
+
+    legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
+    savefig(filename, bbox_inches='tight', dpi=200)
+
+
+def create_bar(filename, emfretmax, emfretmax_error, a, units):
+    # Creates x locations to place the bars
+    ind = arange(len(emfretmax))
+    fig, ax = subplots()
+
+    width = 0.35
 
     unit_label = 'p'
     if ( units == 'u'):
@@ -63,25 +85,17 @@ def create_scatter(filename, result, x, y, a, stddev, i, units):
         unit_label = unit_label + 'M'
     elif ( units == 'n'):
         #add nano symbol
-        unit_label = 'nmol'
+        unit_label = 'nM'
     elif ( units == 'p'):
         #pico
-        unit_label = 'pmol'
-    xlabel('Concentration of Acceptor (' + unit_label + ')')
-    savefig(filename, bbox_inches='tight', dpi=200)
-
-
-def create_bar(filename, emfretmax, emfretmax_error, a):
-    # Creates x locations to place the bars
-    ind = arange(len(emfretmax))
-    fig, ax = subplots()
-
-    width = 0.35
+        unit_label = 'pM'
 
     ax.bar(ind, emfretmax, width, color='r', yerr=emfretmax_error)
     ax.set_ylabel("Em$_{FRETMAX}$", fontsize=14)
     ax.set_xticks(ind+width/2)
     ax.set_xticklabels(a)
+    xlabel('Concentration of Donor [' + unit_label + ']')
+    gca().yaxis.set_major_formatter(ScalarFormatter(useMathText=True))
     ax.ticklabel_format(axis='y', style='sci', scilimits=(0, 0))
     savefig(filename, bbox_inches='tight', dpi=200)
 
@@ -165,7 +179,7 @@ def main():
         if(args.scatter):
             create_scatter(args.scatter, result, x, y[i], a[i], stddev[i], i, args.unit)
     if(args.bar):
-        create_bar(args.bar, emfretmax, emfretmax_error, a)
+        create_bar(args.bar, emfretmax, emfretmax_error, a, args.unit)
 
     print(json.dumps(return_data))
     
